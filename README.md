@@ -1,4 +1,5 @@
-# Mapbender coordinate utility module
+# Mapbender coordinates utility module
+Retrieve coordinates from the map, Zoom to a given map coordinate
 
 ## Features
 * Get coordinates by clicking on the map
@@ -27,3 +28,4 @@ $ cd application/
 $ ../composer self-update
 $ ../composer update
 ```
+
