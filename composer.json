@@ -13,7 +13,6 @@
     "autoload": {
         "psr-4": {"Mapbender\\CoordinatesUtilityBundle": "."}
     },
-    "target-dir": "Mapbender/CoordinatesUtilityBundle",
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"
