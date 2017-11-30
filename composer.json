@@ -8,8 +8,7 @@
         {"name": "Svitlana Aliferova"}
     ],
     "require": {
-        "php": ">=5.3.3",
-        "imag/ldap": "2.x"
+        "php": ">=5.3.3"
     },
     "autoload": {
         "psr-4": {"Mapbender\\CoordinatesUtilityBundle": "."}
