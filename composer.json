@@ -8,7 +8,7 @@
         {"name": "Svitlana Aliferova"}
     ],
     "require": {
-        "php": ">=7.0.22",
+        "php": ">=5.3.3",
         "imag/ldap": "2.x"
     },
     "autoload": {
