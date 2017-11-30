@@ -1,0 +1,33 @@
+mb:
+    coordinatesutility:
+
+        class:
+            title: 'Koordinaten Utility'
+            description: 'Koordinaten-Transformation. Navigation zu Koordinaten auf der Karte.'
+
+        tag:
+            coordinate: 'Koordinaten'
+            map: 'Karte'
+
+        widget:
+            error:
+                noSrs: 'Keine SRS ist definiert'
+                invalidCoordinates: 'Ungültige Koordinaten'
+
+        view:
+            srs:
+                title: 'Koordinatensystem'
+                tooltip: 'Koordinatensystem'
+            transformedCoordinates:
+                 tooltip: 'Transformierte Koordinaten'
+            copytoclipboard:
+                 tooltip: 'Koordinaten in die Zwischenablage kopieren'
+            originCooridnates:
+                 title: 'Koordinaten im Basis-Koordinatensystem der Karte'
+                 tooltip: 'nicht editierbar'
+            button:
+                 search: 'Koordinatensuche'
+                 centermap: 'Karte zentrieren'
+
+        backend:
+            addMapSrsList: "Koordinatensysteme von der Karte hinzufügen"

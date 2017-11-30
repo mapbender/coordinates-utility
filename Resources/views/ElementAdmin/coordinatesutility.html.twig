@@ -1,0 +1,27 @@
+<div class="defaultForm elementForm ui-widget" id="search-coordinate">
+    {{ form_label(form.title) }}{{ form_widget(form.title) }}
+
+    <div class="clearContainer"></div>
+
+    {{ form_label(form.configuration.target) }}{{ form_widget(form.configuration.target) }}
+
+    <div class="clearContainer"></div>
+
+    {{ form_label(form.configuration.type) }}{{ form_widget(form.configuration.type) }}
+
+    <div class="clearContainer"></div>
+
+    {{ form_label(form.configuration.srsList) }}{{ form_widget(form.configuration.srsList, { 'attr': {'class': 'srs-autocomplete'} }) }}
+    <div id="srs-autocomplete-variants"></div>
+
+    <div class="clearContainer"></div>
+
+    <div class="left">
+    {{ form_widget(form.configuration.addMapSrsList) }}<label for="{{form.configuration.addMapSrsList.vars.id}}" class="labelCheck">{{ "mb.coordinatesutility.backend.addMapSrsList" | trans }}</label>
+    </div>
+
+    <div class="clearContainer"></div>
+</div>
+
+<link rel="stylesheet" href="{{ asset('components/jquery-ui/themes/base/jquery-ui.min.css') }}" />
+<script type="text/javascript" src="{{ asset('bundles/mapbendercoordinatesutility/srs-autocomplete.js') }}"></script>

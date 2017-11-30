@@ -1,0 +1,31 @@
+<div id="{{ id }}" class="mb-element mb-element-coordinatesutility" title="{{ title|trans }}">
+
+    <div class="block coordinates-extern">
+        <p>{{ "mb.coordinatesutility.view.srs.title" | trans }}</p>
+
+        <div class="dropdown" title="{{ "mb.coordinatesutility.view.srs.tooltip" | trans }}">
+            <select class="hiddenDropdown srs"></select>
+            <div class="dropdownValue iconDown"></div>
+            <ul class="dropdownList"></ul>
+        </div>
+
+        <div class="input-to-clipboard">
+            <input class="input input-coordinate" type="text" title="{{ "mb.coordinatesutility.view.transformedCoordinates.tooltip" | trans }}" value=""/>
+            <div class="icon iconBig copyClipBoard" title="{{ "mb.coordinatesutility.view.copytoclipboard.tooltip" | trans }}"></div>
+        </div>
+
+    </div>
+
+    <div class="block coordinates-intern">
+        <p>{{ "mb.maptool.clickcoordinate.intern.coords.title" | trans }}</p>
+        <div class="input-to-clipboard">
+            <input class="input map-coordinate" type="text" title="{{ "mb.coordinatesutility.view.originCooridnates.title" | trans }} ({{ "mb.coordinatesutility.view.originCooridnates.tooltip" | trans }})" readonly="true" value=""/>
+            <div class="icon iconBig copyClipBoard" title="{{ "mb.coordinatesutility.view.copytoclipboard.tooltip" | trans }}"></div>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <span class="button coordinate-search left hidden">{{ "mb.coordinatesutility.view.button.search" | trans }}</span>
+        <span class="button center-map right">{{ "mb.coordinatesutility.view.button.centermap" | trans }}</span>
+    </div>
+</div>

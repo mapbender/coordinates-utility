@@ -1,0 +1,34 @@
+mb:
+    coordinatesutility:
+
+        class:
+            title: 'Coordinates utility'
+            description: 'Transform coordinates in different SRS. Navigate to coordinates on the map.'
+
+        tag:
+            coordinate: 'coordinate'
+            map: 'map'
+
+        widget:
+            error:
+                noSrs: 'No SRS is defined'
+                invalidCoordinates: 'Invalid coordinates'
+
+        view:
+            srs:
+                title: 'Coordinate system'
+                tooltip: 'Coordinate system'
+            transformedCoordinates:
+                 tooltip: 'Transformed coordinates'
+            copytoclipboard:
+                 tooltip: 'Copy to clipboard'
+            originCooridnates:
+                 title: 'Coordinate in map reference system'
+                 tooltip: 'read only'
+            button:
+                 search: 'Coordinate search'
+                 centermap: 'Center map'
+
+        backend:
+            addMapSrsList: "Add map's srs list"
+
