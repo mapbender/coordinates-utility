@@ -11,10 +11,10 @@ Retrieve coordinates from the map, Zoom to a given map coordinate
 * Add required module to mapbender
 ```sh
 $ cd application/
-$ ../composer require "mapbender/coordinates-utility"
+$ bin/composer require "mapbender/coordinates-utility"
 ```
 * Register routers in app/config/routing.yml
-```
+```yaml
 mapbender_coordinatesutilitybundle:
     resource: "@MapbenderCoordinatesUtilityBundle/Controller/"
     type: annotation
@@ -25,7 +25,6 @@ mapbender_coordinatesutilitybundle:
 
  ```sh
 $ cd application/
-$ ../composer self-update
-$ ../composer update
+$ bin/composer update
 ```
 
