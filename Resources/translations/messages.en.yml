@@ -22,7 +22,7 @@ mb:
                  tooltip: 'Transformed coordinates'
             copytoclipboard:
                  tooltip: 'Copy to clipboard'
-            originCooridnates:
+            originCoordinates:
                  title: 'Coordinate in map reference system'
                  tooltip: 'read only'
             button:
