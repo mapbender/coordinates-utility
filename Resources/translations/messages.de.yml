@@ -11,7 +11,7 @@ mb:
 
         widget:
             error:
-                noSrs: 'Keine SRS ist definiert'
+                noSrs: 'Kein SRS ist definiert'
                 invalidCoordinates: 'Ungültige Koordinaten'
 
         view:
@@ -22,8 +22,8 @@ mb:
                  tooltip: 'Transformierte Koordinaten'
             copytoclipboard:
                  tooltip: 'Koordinaten in die Zwischenablage kopieren'
-            originCooridnates:
-                 title: 'Koordinaten im Basis-Koordinatensystem der Karte'
+            originCoordinates:
+                 title: 'Koordinaten im Anzeige-Koordinatensystem der Karte'
                  tooltip: 'nicht editierbar'
             button:
                  search: 'Koordinatensuche'
