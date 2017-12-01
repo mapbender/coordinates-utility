@@ -275,6 +275,16 @@
             widget.popupWindow.$element.removeClass('hidden');
         },
 
+        /**
+         * Provide default action
+         *
+         * @returns {action}
+         */
+        defaultAction: function() {
+            var widget = this;
+
+            return widget.open();
+        },
 
         /**
          * On open handler
