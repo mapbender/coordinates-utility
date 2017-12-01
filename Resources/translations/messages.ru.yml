@@ -22,7 +22,7 @@ mb:
                  tooltip: 'Трансформированные координаты'
             copytoclipboard:
                  tooltip: 'Копировать в буфер обмена'
-            originCooridnates:
+            originCoordinates:
                  title: 'Координаты с системе координат карты'
                  tooltip: 'редактирование невоможно'
             button:
