@@ -8,7 +8,7 @@
         {"name": "Svitlana Aliferova"}
     ],
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=5.5.4"
     },
     "autoload": {
         "psr-4": {"Mapbender\\CoordinatesUtilityBundle\\": "."}
