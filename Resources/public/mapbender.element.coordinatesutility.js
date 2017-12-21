@@ -231,13 +231,7 @@
             $(document).on('mbmapsrsadded', $.proxy(widget._resetFields, widget));
 
             $('select.srs', widget.element).on('change', $.proxy(widget._transformCoordinateToSelectedSrs, widget));
-
-            $('input.input-coordinate', widget.element).on('change', function() {
-                var lonlat = $(this).val().split(/ \s*/);
-
-                widget.lat = lonlat.pop();
-                widget.lon = lonlat.pop();
-            });
+            $('input.input-coordinate', widget.element).on('change', $.proxy(widget._transformCoordinateToMapSrs, widget));
         },
 
         /**
@@ -529,7 +523,6 @@
         _areCoordinatesValid: function() {
             var widget = this;
 
-            console.log($.isNumeric(widget.lon));
             if (!$.isNumeric(widget.lon) || !$.isNumeric(widget.lat)) {
                 return false;
             }
@@ -554,6 +547,42 @@
 
             widget._transformCoordinates();
             widget._updateFields();
+        },
+
+        /**
+         * Transform coordinates from selected SRS to a map SRS
+         *
+         * @private
+         */
+        _transformCoordinateToMapSrs: function () {
+            var widget = this,
+                selectedSrs = $('select.srs', widget.element).val(),
+                inputCoordinates = $('input.input-coordinate').val(),
+                inputCoordinatesArray = inputCoordinates.split(/ \s*/);
+
+
+            var lat = inputCoordinatesArray.pop(),
+                lon = inputCoordinatesArray.pop();
+
+            var mapProjection = widget.mbMap.map.olMap.getProjectionObject(),
+                selectedProjection = new OpenLayers.Projection(selectedSrs);
+
+            var lonlat = new OpenLayers.LonLat(lon,lat).transform(selectedProjection, mapProjection);
+
+            widget.lat = lonlat.lat;
+            widget.lon = lonlat.lon;
+
+            if (widget._areCoordinatesValid()) {
+                widget.currentMapCoordinate = widget._formatOutputString(
+                    lonlat,
+                    mapProjection.proj.units
+                );
+
+                widget.transformedCoordinate = inputCoordinates;
+                widget.clickPoint = widget.clickPoint = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+
+                widget._updateFields();
+            }
         },
 
         /**
