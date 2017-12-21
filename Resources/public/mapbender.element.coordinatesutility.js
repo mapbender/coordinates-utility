@@ -1,4 +1,8 @@
-(function($) {
+/*jslint browser: true, nomen: true*/
+/*globals initDropdown, Mapbender, OpenLayers, Proj4js, _, jQuery*/
+
+(function ($) {
+    'use strict';
 
     $.widget("mapbender.mbCoordinatesUtility", {
         options: {
@@ -33,11 +37,11 @@
          *
          * @private
          */
-        _create: function() {
-            var widget = this;
-            var options = widget.options;
+        _create: function () {
+            var widget = this,
+                options = widget.options;
 
-            if(!Mapbender.checkTarget("mbCoordinatesUtility", options.target)) {
+            if (!Mapbender.checkTarget("mbCoordinatesUtility", options.target)) {
                 return;
             }
 
@@ -49,26 +53,25 @@
          *
          * @private
          */
-        _setup: function() {
-            var widget = this;
-            var options = widget.options;
+        _setup: function () {
+            var options = this.options;
 
-            widget.mbMap = $("#" + widget.options.target).data("mapbenderMbMap");
-            widget.mapQuery = $(widget.mbMap.element).data('mapQuery');
-            widget.highlightLayer = widget.mapQuery.layers({
+            this.mbMap = $("#" + this.options.target).data("mapbenderMbMap");
+            this.mapQuery = $(this.mbMap.element).data('mapQuery');
+            this.highlightLayer = this.mapQuery.layers({
                 type: 'vector',
                 label: 'Highlight'
             });
 
-            widget.isPopUpDialog = options.type === "dialog";
+            this.isPopUpDialog = options.type === "dialog";
 
-            widget._setupMapClickHandler();
-            widget._setupButtons();
-            widget._setupSrsDropdown();
-            widget._setupEventListeners();
+            this._setupMapClickHandler();
+            this._setupButtons();
+            this._setupSrsDropdown();
+            this._setupEventListeners();
 
-            widget._trigger('ready');
-            widget._ready();
+            this._trigger('ready');
+            this._ready();
         },
 
         /**
@@ -76,7 +79,7 @@
          *
          * @private
          */
-        _setupButtons: function() {
+        _setupButtons: function () {
             var widget = this;
 
             $('.copyClipBoard', widget.element).on('click',  $.proxy(widget._copyToClipboard, widget));
@@ -85,7 +88,7 @@
             if (!widget.isPopUpDialog) {
                 var coordinateSearchButton = $('.coordinate-search');
 
-                coordinateSearchButton.on('click', function() {
+                coordinateSearchButton.on('click', function () {
                     var isActive = $(this).hasClass('active');
 
                     if (isActive) {
@@ -106,10 +109,10 @@
          *
          * @private
          */
-        _setupMapClickHandler: function() {
+        _setupMapClickHandler: function () {
             var widget = this;
 
-            if(!widget.mapClickHandler) {
+            if (!widget.mapClickHandler) {
                 widget.mapClickHandler = new OpenLayers.Handler.Click(
                     widget,
                     { 'click': widget._mapClick },
@@ -121,9 +124,9 @@
         /**
          * Create SRS dropdown
          */
-        _setupSrsDropdown: function() {
-            var widget = this;
-            var dropdown = $('.srs', widget.element);
+        _setupSrsDropdown: function () {
+            var widget = this,
+                dropdown = $('.srs', widget.element);
 
             if (dropdown.children().length === 0) {
                 widget._createDropdownOptions(dropdown);
@@ -138,9 +141,9 @@
          * @param {DOM} dropdown
          * @private
          */
-        _createDropdownOptions: function(dropdown) {
-            var widget = this;
-            var srsArray = (null === widget.options.srsList) ? [] : widget.options.srsList;
+        _createDropdownOptions: function (dropdown) {
+            var widget = this,
+                srsArray = (null === widget.options.srsList) ? [] : widget.options.srsList;
 
             if (widget.options.addMapSrsList) {
                 widget._addMapSrsOptionsToDropodw(srsArray);
@@ -151,7 +154,7 @@
                 return;
             }
 
-            srsArray.map(function(srs){
+            srsArray.map(function (srs) {
                 if (widget._isValidSRS(srs.name)) {
                     var title = (srs.title.length === 0)
                         ? srs.name
@@ -171,9 +174,9 @@
          * @returns {boolean}
          * @private
          */
-        _isValidSRS: function(srs) {
-            var projection = new OpenLayers.Projection(srs);
-            var isValid = true;
+        _isValidSRS: function (srs) {
+            var projection = new OpenLayers.Projection(srs),
+                isValid = true;
 
             if (typeof projection.proj.defData === 'undefined') {
                 isValid = false;
@@ -188,15 +191,14 @@
          * @param array srsArray
          * @private
          */
-        _addMapSrsOptionsToDropodw: function(srsArray) {
-            var widget = this;
-            var mapSrs = widget.mbMap.getAllSrs();
+        _addMapSrsOptionsToDropodw: function (srsArray) {
+            var mapSrs = this.mbMap.getAllSrs();
 
-            var srsNames = srsArray.map(function(srs) {
+            var srsNames = srsArray.map(function (srs) {
                 return srs.name;
             });
 
-            mapSrs.map(function(srs){
+            mapSrs.map(function (srs) {
 
                 var srsAlreadyExists = $.inArray(srs.name, srsNames) >= 0;
 
@@ -212,9 +214,8 @@
          * @param {DOM} dropdown
          * @private
          */
-        _setDefaultSelectedValue: function(dropdown) {
-            var widget = this;
-            var currentSrs = widget.mbMap.getModel().getCurrentProj();
+        _setDefaultSelectedValue: function (dropdown) {
+            var currentSrs = this.mbMap.getModel().getCurrentProj();
 
             dropdown.val(currentSrs.projCode);
         },
@@ -224,7 +225,7 @@
          *
          * @private
          */
-        _setupEventListeners: function() {
+        _setupEventListeners: function () {
             var widget = this;
 
             $(document).on('mbmapsrschanged', $.proxy(widget._resetFields, widget));
@@ -240,11 +241,11 @@
          * @param html
          * @return {mapbender.mbLegend.popup}
          */
-        popup: function() {
-            var widget = this;
-            var element = widget.element;
+        popup: function () {
+            var widget = this,
+                element = widget.element;
 
-            if(!widget.popupWindow || !widget.popupWindow.$element) {
+            if (!widget.popupWindow || !widget.popupWindow.$element) {
                 widget.popupWindow = new Mapbender.Popup2({
                     title:                  element.attr('title'),
                     draggable:              true,
@@ -261,7 +262,7 @@
                     buttons:                {}
                 });
 
-                widget.popupWindow.$element.on('close', function() {
+                widget.popupWindow.$element.on('close', function () {
                     widget.close();
                 });
             }
@@ -274,45 +275,39 @@
          *
          * @returns {action}
          */
-        defaultAction: function() {
-            var widget = this;
-
-            return widget.open();
+        defaultAction: function () {
+            return this.open();
         },
 
         /**
          * On open handler
          */
-        open: function(callback) {
-            var widget = this;
+        open: function (callback) {
+            this.callback = callback;
 
-            widget.callback = callback;
-
-            widget.popup();
-            widget.activate();
+            this.popup();
+            this.activate();
         },
 
         /**
          * On close
          */
-        close: function() {
-            var widget = this;
+        close: function () {
+            this.popupWindow.$element.addClass('hidden');
 
-            widget.popupWindow.$element.addClass('hidden');
-
-            widget.deactivate();
-            widget._resetFields();
+            this.deactivate();
+            this._resetFields();
         },
 
         /**
          * On ready handler
          */
-        ready: function(callback) {
+        ready: function (callback) {
             var widget = this;
 
-            if(widget.readyState) {
+            if (widget.readyState) {
 
-                if(typeof(callback ) === 'function') {
+                if (typeof (callback) === 'function') {
                     callback();
                 }
 
@@ -324,11 +319,11 @@
         /**
          * On ready handler
          */
-        _ready: function() {
+        _ready: function () {
             var widget = this;
 
-            _.each(widget.readyCallbacks, function(readyCallback){
-                if(typeof(readyCallback ) === 'function') {
+            _.each(widget.readyCallbacks, function (readyCallback) {
+                if (typeof (readyCallback) === 'function') {
                     readyCallback();
                 }
             });
@@ -343,21 +338,17 @@
         /**
          * Activate coordinate search
          */
-        activate: function() {
-            var widget = this;
-
-            widget.mapClickHandler.activate();
-            widget.mbMap.map.element.addClass('crosshair');
+        activate: function () {
+            this.mapClickHandler.activate();
+            this.mbMap.map.element.addClass('crosshair');
         },
 
         /**
          * Deactivate coordinate search
          */
-        deactivate: function() {
-            var widget = this;
-
-            widget.mapClickHandler.deactivate();
-            widget.mbMap.map.element.removeClass('crosshair');
+        deactivate: function () {
+            this.mapClickHandler.deactivate();
+            this.mbMap.map.element.removeClass('crosshair');
         },
 
         /**
@@ -366,19 +357,17 @@
          * @param e selected pixel
          * @private
          */
-        _mapClick: function(e) {
-            var widget = this;
+        _mapClick: function (e) {
+            var lonlat = this.mbMap.map.olMap.getLonLatFromPixel(e.xy);
+            this.clickPoint = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
 
-            var lonlat = widget.mbMap.map.olMap.getLonLatFromPixel(e.xy);
-            widget.clickPoint = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+            this.currentMapCoordinate = this._formatOutputString(lonlat, e.object.units);
 
-            widget.currentMapCoordinate = widget._formatOutputString(lonlat, e.object.units);
+            this.lon = lonlat.lon;
+            this.lat = lonlat.lat;
 
-            widget.lon = lonlat.lon;
-            widget.lat = lonlat.lat;
-
-            widget._transformCoordinates();
-            widget._updateFields();
+            this._transformCoordinates();
+            this._updateFields();
         },
 
         /**
@@ -386,20 +375,19 @@
          *
          * @private
          */
-        _transformCoordinates: function() {
-            var widget = this;
-            var selectedSrs = $('select.srs', widget.element).val();
+        _transformCoordinates: function () {
+            var selectedSrs = $('select.srs', this.element).val();
 
-            if (null === widget.lon || null === widget.lat || null === selectedSrs) {
+            if (null === this.lon || null === this.lat || null === selectedSrs) {
                 return;
             }
 
-            var currentProjection = widget.mbMap.map.olMap.getProjectionObject();
-            var projectionToTransform = new OpenLayers.Projection(selectedSrs);
+            var currentProjection = this.mbMap.map.olMap.getProjectionObject(),
+                projectionToTransform = new OpenLayers.Projection(selectedSrs);
 
-            var lonlat = new OpenLayers.LonLat(widget.lon,widget.lat).transform(currentProjection, projectionToTransform);
+            var lonlat = new OpenLayers.LonLat(this.lon, this.lat).transform(currentProjection, projectionToTransform);
 
-            widget.transformedCoordinate = widget._formatOutputString(
+            this.transformedCoordinate = this._formatOutputString(
                 lonlat,
                 projectionToTransform.proj.units
             );
@@ -412,14 +400,12 @@
          * @returns {string}
          * @private
          */
-        _formatOutputString: function(point, unit) {
-            var widget = this;
-
+        _formatOutputString: function (point, unit) {
             var decimal = (unit  === 'm')
-                ? widget.DECIMAL_METRIC
-                : widget.DECIMAL_ANGULAR;
+                ? this.DECIMAL_METRIC
+                : this.DECIMAL_ANGULAR;
 
-           return point.lon.toFixed(decimal) + widget.STRING_SEPARATOR + point.lat.toFixed(decimal);
+            return point.lon.toFixed(decimal) + this.STRING_SEPARATOR + point.lat.toFixed(decimal);
         },
 
         /**
@@ -427,13 +413,11 @@
          *
          * @private
          */
-        _updateFields: function() {
-            var widget = this;
+        _updateFields: function () {
+            $('input.map-coordinate', this.element).val(this.currentMapCoordinate);
+            $('input.input-coordinate', this.element).val(this.transformedCoordinate);
 
-            $('input.map-coordinate', widget.element).val(widget.currentMapCoordinate);
-            $('input.input-coordinate', widget.element).val(widget.transformedCoordinate);
-
-            widget._showFeature();
+            this._showFeature();
         },
 
         /**
@@ -441,14 +425,12 @@
          *
          * @private
          */
-        _resetFields: function(){
-            var widget = this;
+        _resetFields: function () {
+            this.currentMapCoordinate = null;
+            this.transformedCoordinate = null;
 
-            widget.currentMapCoordinate = null;
-            widget.transformedCoordinate = null;
-
-            widget._updateFields();
-            widget._removeFeature();
+            this._updateFields();
+            this._removeFeature();
         },
 
         /**
@@ -456,13 +438,11 @@
          *
          * @private
          */
-        _showFeature: function(){
-            var widget = this;
+        _showFeature: function () {
+            this.feature = new OpenLayers.Feature.Vector(this.clickPoint);
 
-            widget.feature = new OpenLayers.Feature.Vector(widget.clickPoint);
-
-            widget.highlightLayer.olLayer.removeAllFeatures();
-            widget.highlightLayer.olLayer.addFeatures(widget.feature);
+            this.highlightLayer.olLayer.removeAllFeatures();
+            this.highlightLayer.olLayer.addFeatures(this.feature);
         },
 
         /**
@@ -470,11 +450,9 @@
          *
          * @private
          */
-        _removeFeature: function(){
-            var widget = this;
-
-            if(widget.feature) {
-                widget.highlightLayer.olLayer.removeFeatures(widget.feature);
+        _removeFeature: function () {
+            if (this.feature) {
+                this.highlightLayer.olLayer.removeFeatures(this.feature);
             }
         },
 
@@ -484,7 +462,7 @@
          * @param e
          * @private
          */
-        _copyToClipboard: function(e){
+        _copyToClipboard: function (e) {
             $(e.target).parent().find('input').select();
             document.execCommand("copy");
         },
@@ -494,20 +472,18 @@
          *
          * @private
          */
-        _centerMap: function() {
-            var widget = this;
-
-            if (null === widget.lon || null === widget.lat || typeof widget.lon === 'undefined' || typeof widget.lat === 'undefined'){
+        _centerMap: function () {
+            if (null === this.lon || null === this.lat || typeof this.lon === 'undefined' || typeof this.lat === 'undefined') {
                 return;
             }
 
-            if (widget._areCoordinatesValid()) {
-                widget.highlightLayer.olLayer.removeAllFeatures();
-                widget.highlightLayer.olLayer.addFeatures(widget.feature);
+            if (this._areCoordinatesValid()) {
+                this.highlightLayer.olLayer.removeAllFeatures();
+                this.highlightLayer.olLayer.addFeatures(this.feature);
 
-                var lonLat = new OpenLayers.LonLat(widget.lon,widget.lat);
+                var lonLat = new OpenLayers.LonLat(this.lon, this.lat);
 
-                widget.mbMap.map.olMap.setCenter(lonLat, widget.ZOOM);
+                this.mbMap.map.olMap.setCenter(lonLat, this.ZOOM);
             } else {
                 Mapbender.error(Mapbender.trans("mb.coordinatesutility.widget.error.invalidCoordinates"));
             }
@@ -520,21 +496,19 @@
          * @returns boolean
          * @private
          */
-        _areCoordinatesValid: function() {
-            var widget = this;
-
-            if (!$.isNumeric(widget.lon) || !$.isNumeric(widget.lat)) {
+        _areCoordinatesValid: function () {
+            if (!$.isNumeric(this.lon) || !$.isNumeric(this.lat)) {
                 return false;
             }
 
-            var Point = new Proj4js.Point(widget.lon,widget.lat);
-            var currentProjection = widget.mbMap.map.olMap.getProjectionObject();
+            var Point = new Proj4js.Point(this.lon, this.lat),
+                currentProjection = this.mbMap.map.olMap.getProjectionObject();
 
             Proj4js.transform(currentProjection, currentProjection, Point);
 
             var lonLat = new OpenLayers.LonLat(Point.x, Point.y);
 
-            return widget.mbMap.map.olMap.isValidLonLat(lonLat);
+            return this.mbMap.map.olMap.isValidLonLat(lonLat);
         },
 
         /**
@@ -542,11 +516,9 @@
          *
          * @private
          */
-        _transformCoordinateToSelectedSrs: function(){
-            var widget = this;
-
-            widget._transformCoordinates();
-            widget._updateFields();
+        _transformCoordinateToSelectedSrs: function () {
+            this._transformCoordinates();
+            this._updateFields();
         },
 
         /**
@@ -555,8 +527,7 @@
          * @private
          */
         _transformCoordinateToMapSrs: function () {
-            var widget = this,
-                selectedSrs = $('select.srs', widget.element).val(),
+            var selectedSrs = $('select.srs', this.element).val(),
                 inputCoordinates = $('input.input-coordinate').val(),
                 inputCoordinatesArray = inputCoordinates.split(/ \s*/);
 
@@ -564,24 +535,24 @@
             var lat = inputCoordinatesArray.pop(),
                 lon = inputCoordinatesArray.pop();
 
-            var mapProjection = widget.mbMap.map.olMap.getProjectionObject(),
+            var mapProjection = this.mbMap.map.olMap.getProjectionObject(),
                 selectedProjection = new OpenLayers.Projection(selectedSrs);
 
-            var lonlat = new OpenLayers.LonLat(lon,lat).transform(selectedProjection, mapProjection);
+            var lonlat = new OpenLayers.LonLat(lon, lat).transform(selectedProjection, mapProjection);
 
-            widget.lat = lonlat.lat;
-            widget.lon = lonlat.lon;
+            this.lat = lonlat.lat;
+            this.lon = lonlat.lon;
 
-            if (widget._areCoordinatesValid()) {
-                widget.currentMapCoordinate = widget._formatOutputString(
+            if (this._areCoordinatesValid()) {
+                this.currentMapCoordinate = this._formatOutputString(
                     lonlat,
                     mapProjection.proj.units
                 );
 
-                widget.transformedCoordinate = inputCoordinates;
-                widget.clickPoint = widget.clickPoint = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+                this.transformedCoordinate = inputCoordinates;
+                this.clickPoint = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
 
-                widget._updateFields();
+                this._updateFields();
             }
         },
 
@@ -592,10 +563,8 @@
          * @param srsObj
          * @private
          */
-        _onMapSrsAdded: function(event, srsObj){
-            var widget = this;
-
-            $('.srs', widget.element).append($('<option></option>').val(srsObj.name).html(srsObj.title));
+        _onMapSrsAdded: function (event, srsObj) {
+            $('.srs', this.element).append($('<option></option>').val(srsObj.name).html(srsObj.title));
         }
     });
 
