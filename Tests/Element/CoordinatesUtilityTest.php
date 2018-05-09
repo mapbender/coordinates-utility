@@ -3,7 +3,6 @@
 namespace Mapbender\CoordinatesUtilityBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DependencyInjection\Container;
 
 use Mapbender\CoreBundle\Component\Application;
 use Mapbender\CoreBundle\Entity\Element as Entity;
@@ -13,6 +12,10 @@ use Mapbender\CoordinatesUtilityBundle\Element\CoordinatesUtility;
 
 class CoordinatesUtilityTest extends WebTestCase
 {
+    const SRS_NAME = "EPSG:4647";
+    const SRS_TITLE = "ETRS89 / UTM zone N32";
+    const SRS_DEFINITION = "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=32500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
+
     /**
      * @var CoordinatesUtility
      */
@@ -20,7 +23,11 @@ class CoordinatesUtilityTest extends WebTestCase
 
     public function setUp()
     {
-        $container = new Container();
+        $client = static::createClient();
+        $kernel = static::$kernel;
+
+        $container = static::$kernel->getContainer();
+
         $applicationEntity = new ApplicationEntity();
         $application = new Application($container, $applicationEntity, []);
         $entity = new Entity();
@@ -81,6 +88,33 @@ class CoordinatesUtilityTest extends WebTestCase
             ->getWidgetName();
 
         $expected = "mapbender.mbCoordinatesUtility";
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Test srs definition
+     */
+    public function testSetSrsDefinitionsFromDatabase()
+    {
+        $srsList = [
+            [
+                "name"  => self::SRS_NAME,
+                "title" => self::SRS_TITLE,
+            ]
+        ];
+
+        $actual = $this
+            ->coordinatesUtility
+            ->setSrsDefinitionsFromDatabase($srsList);
+
+        $expected = [
+            [
+                "name"  => self::SRS_NAME,
+                "title" => self::SRS_TITLE,
+                "definition" => self::SRS_DEFINITION,
+            ]
+        ];
 
         $this->assertEquals($expected, $actual);
     }
