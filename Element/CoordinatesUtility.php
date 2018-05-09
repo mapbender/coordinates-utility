@@ -3,6 +3,7 @@
 namespace Mapbender\CoordinatesUtilityBundle\Element;
 
 use Mapbender\CoreBundle\Component\Element;
+use Mapbender\CoreBundle\Entity\SRS;
 
 class CoordinatesUtility extends Element
 {
@@ -100,9 +101,48 @@ class CoordinatesUtility extends Element
                 'MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.html.twig',
                 [
                     'id'            => $this->getId(),
-                    'configuration' => $this->entity->getConfiguration(),
+                    'configuration' => $this->getConfiguration(),
                     'title'         => $this->getTitle()
                 ]
             );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getConfiguration()
+    {
+        $configuration = parent::getConfiguration();
+
+        if (isset($configuration['srsList']) && !empty($configuration['srsList'])) {
+            $configuration['srsList'] = $this->setSrsDefinitionsFromDatabase($configuration['srsList']);
+        }
+
+        return $configuration;
+    }
+
+
+    /**
+     * Get Srs definitions from database
+     *
+     * @param $srsList
+     * @return mixed
+     */
+    public function setSrsDefinitionsFromDatabase($srsList)
+    {
+        $repository = $repository = $this
+            ->container
+            ->get('doctrine')
+            ->getRepository(SRS::class);
+
+        foreach ($srsList as $key => $srs) {
+            $srsProjection = $repository->findOneBy(array('name' => $srs['name']));
+
+            if (null !== $srsProjection) {
+                $srsList[$key]['definition'] = $srsProjection->getDefinition();
+            }
+        }
+
+        return $srsList;
     }
 }

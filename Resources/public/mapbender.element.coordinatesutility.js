@@ -65,6 +65,7 @@
 
             this.isPopUpDialog = options.type === "dialog";
 
+            this._initializeMissingSrsDefinitions(this.options.srsList);
             this._setupMapClickHandler();
             this._setupButtons();
             this._setupSrsDropdown();
@@ -72,6 +73,20 @@
 
             this._trigger('ready');
             this._ready();
+        },
+
+        /**
+         * Initialize srs definitions which are not set before and missing in Proj4js.defs array
+         *
+         * @param srsList
+         * @private
+         */
+        _initializeMissingSrsDefinitions: function (srsList) {
+            srsList.map(function (srs) {
+                if (typeof Proj4js.defs[srs.name] === "undefined") {
+                    Proj4js.defs[srs.name] = srs.definition;
+                }
+            });
         },
 
         /**
