@@ -115,34 +115,54 @@ class CoordinatesUtility extends Element
         $configuration = parent::getConfiguration();
 
         if (isset($configuration['srsList']) && !empty($configuration['srsList'])) {
-            $configuration['srsList'] = $this->setSrsDefinitionsFromDatabase($configuration['srsList']);
+            $configuration['srsList'] = $this->addSrsDefinitions($configuration['srsList']);
         }
 
         return $configuration;
     }
 
-
     /**
-     * Get Srs definitions from database
-     *
      * @param $srsList
      * @return mixed
      */
-    public function setSrsDefinitionsFromDatabase($srsList)
+    public function addSrsDefinitions($srsList)
     {
-        $repository = $repository = $this
-            ->container
-            ->get('doctrine')
-            ->getRepository(SRS::class);
+        $srsWithDefinitions = $this->getSrsDefinitionsFromDatabase($srsList);
 
         foreach ($srsList as $key => $srs) {
-            $srsProjection = $repository->findOneBy(array('name' => $srs['name']));
+            $srsName = $srs['name'];
 
-            if (null !== $srsProjection) {
-                $srsList[$key]['definition'] = $srsProjection->getDefinition();
+            if (isset($srsWithDefinitions[$srsName])) {
+                $srsList[$key]['definition'] = $srsWithDefinitions[$srsName]['definition'];
             }
         }
 
         return $srsList;
+    }
+
+    /**
+     * @param $srsList
+     * @return mixed
+     */
+    public function getSrsDefinitionsFromDatabase($srsList)
+    {
+        $queryBuilder = $this
+            ->container
+            ->get('doctrine')
+            ->getManager()
+            ->createQueryBuilder();
+
+        $srsNames = array_map(function($srs) {
+            return $srs['name'];
+        }, $srsList);
+
+        $queryBuilder
+            ->select("srs")
+            ->from(SRS::class, 'srs', 'srs.name')
+            ->where('srs.name IN (:srsNames)')
+            ->setParameter('srsNames', $srsNames)
+            ->getQuery();
+
+        return $queryBuilder->getQuery()->getArrayResult();
     }
 }
