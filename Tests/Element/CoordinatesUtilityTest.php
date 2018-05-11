@@ -23,8 +23,8 @@ class CoordinatesUtilityTest extends WebTestCase
 
     public function setUp()
     {
-        $client = static::createClient();
-        $kernel = static::$kernel;
+        static::createClient();
+        static::$kernel;
 
         $container = static::$kernel->getContainer();
 
