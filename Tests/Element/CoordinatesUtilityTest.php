@@ -95,7 +95,7 @@ class CoordinatesUtilityTest extends WebTestCase
     /**
      * Test srs definition
      */
-    public function testSetSrsDefinitionsFromDatabase()
+    public function testAddSrsDefinitions()
     {
         $srsList = [
             [
@@ -106,7 +106,7 @@ class CoordinatesUtilityTest extends WebTestCase
 
         $actual = $this
             ->coordinatesUtility
-            ->setSrsDefinitionsFromDatabase($srsList);
+            ->addSrsDefinitions($srsList);
 
         $expected = [
             [
