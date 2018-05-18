@@ -82,6 +82,11 @@
          * @private
          */
         _initializeMissingSrsDefinitions: function (srsList) {
+
+            if (null === srsList || typeof srsList.length === "undefined") {
+                return;
+            }
+
             srsList.map(function (srs) {
                 if (typeof Proj4js.defs[srs.name] === "undefined") {
                     Proj4js.defs[srs.name] = srs.definition;
