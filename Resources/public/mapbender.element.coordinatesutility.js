@@ -4,7 +4,7 @@
 (function ($) {
     'use strict';
 
-    $.widget("mapbender.mbCoordinatesUtility", {
+    $.widget("mapbender.mbCoordinatesUtility", $.mapbender.mbBaseElement, {
         options: {
             autoOpen:  true,
             target:    null
@@ -17,6 +17,7 @@
 
         mbMap:          null,
         mapQuery:       null,
+        model:          null,
         highlightLayer: null,
         containerInfo:  null,
         feature:        null,
@@ -24,6 +25,7 @@
 
         currentMapCoordinate: null,
         transformedCoordinate: null,
+        coordinatesObject: undefined,
         lon: null,
         lat: null,
 
@@ -56,47 +58,50 @@
         _setup: function () {
             var options = this.options;
 
-            this.mbMap = $("#" + this.options.target).data("mapbenderMbMap");
-            this.mapQuery = $(this.mbMap.element).data('mapQuery');
-            this.highlightLayer = this.mapQuery.layers({
+            this.mbMap = Mapbender.elementRegistry.listWidgets().mapbenderMbMap;
+            this.model = this.mbMap.model;
+
+            // this.mapQuery = $(this.mbMap.element).data('mapQuery');
+           /* this.highlightLayer = this.mapQuery.layers({
                 type: 'vector',
                 label: 'Highlight'
-            });
+            });*/
 
             this.isPopUpDialog = options.type === "dialog";
 
-            this._initializeMissingSrsDefinitions(this.options.srsList);
-            this._setupMapClickHandler();
-            this._setupButtons();
-            this._setupSrsDropdown();
-            this._setupEventListeners();
-
-            this._trigger('ready');
-            this._ready();
+            this._initializeMissingSrsDefinitions(this.options.srsList)
+                ._setupMapClickHandler()
+                ._setupButtons()
+                ._setupSrsDropdown()
+                ._setupEventListeners();
         },
 
         /**
          * Initialize srs definitions which are not set before and missing in Proj4js.defs array
          *
          * @param srsList
+         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _initializeMissingSrsDefinitions: function (srsList) {
 
             if (null === srsList || typeof srsList.length === "undefined") {
-                return;
+                return this;
             }
 
             srsList.map(function (srs) {
-                if (typeof Proj4js.defs[srs.name] === "undefined") {
-                    Proj4js.defs[srs.name] = srs.definition;
+                if (typeof proj4.defs(srs.name) === "undefined") {
+                    proj4.defs(srs.name, srs.definition);
                 }
             });
+
+            return this;
         },
 
         /**
          * Setup widget buttons
          *
+         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _setupButtons: function () {
@@ -122,27 +127,31 @@
 
                 coordinateSearchButton.removeClass('hidden');
             }
+
+            return this;
         },
 
         /**
          * Setup map click handler
          *
+         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _setupMapClickHandler: function () {
             var widget = this;
 
             if (!widget.mapClickHandler) {
-                widget.mapClickHandler = new OpenLayers.Handler.Click(
-                    widget,
-                    { 'click': widget._mapClick },
-                    { map: widget.mbMap.map.olMap }
-                );
+                widget.mapClickHandler = this.model.setOnClickHandler( $.proxy(this._mapClick, this));
             }
+
+            return this;
         },
 
         /**
          * Create SRS dropdown
+         *
+         * @returns {mapbender.mbCoordinatesUtility}
+         * @private
          */
         _setupSrsDropdown: function () {
             var widget = this,
@@ -153,12 +162,15 @@
             }
 
             initDropdown.call($('.dropdown', widget.element));
+
+            return this;
         },
 
         /**
          * Create options for the dropdown
          *
          * @param {DOM} dropdown
+         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _createDropdownOptions: function (dropdown) {
@@ -171,7 +183,7 @@
 
             if (srsArray.length === 0) {
                 Mapbender.error(Mapbender.trans("mb.coordinatesutility.widget.error.noSrs"));
-                return;
+                return this;
             }
 
             srsArray.map(function (srs) {
@@ -185,6 +197,8 @@
             });
 
             widget._setDefaultSelectedValue(dropdown);
+
+            return this;
         },
 
         /**
@@ -195,10 +209,12 @@
          * @private
          */
         _isValidSRS: function (srs) {
-            var projection = new OpenLayers.Projection(srs),
-                isValid = true;
+            var isValid = true;
 
-            if (typeof projection.proj.defData === 'undefined') {
+            try {
+                proj4.Proj(srs);
+            } catch (error) {
+                console.error("Projection " + srs + " is not valid", error);
                 isValid = false;
             }
 
@@ -209,6 +225,7 @@
          * Add SRSs from the map
          *
          * @param array srsArray
+         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _addMapSrsOptionsToDropodw: function (srsArray) {
@@ -226,23 +243,29 @@
                     srsArray.push(srs);
                 }
             });
+
+            return this;
         },
 
         /**
          * Set selected by default value in dropdown
          *
          * @param {DOM} dropdown
+         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _setDefaultSelectedValue: function (dropdown) {
-            var currentSrs = this.mbMap.getModel().getCurrentProj();
+            var currentSrs = this.model.getCurrentProjectionCode();
 
-            dropdown.val(currentSrs.projCode);
+            dropdown.val(currentSrs);
+
+            return this;
         },
 
         /**
          * Setup event listeners
          *
+         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _setupEventListeners: function () {
@@ -253,6 +276,8 @@
 
             $('select.srs', widget.element).on('change', $.proxy(widget._transformCoordinateToSelectedSrs, widget));
             $('input.input-coordinate', widget.element).on('change', $.proxy(widget._transformCoordinateToMapSrs, widget));
+
+            return this;
         },
 
         /**
@@ -320,71 +345,32 @@
         },
 
         /**
-         * On ready handler
-         */
-        ready: function (callback) {
-            var widget = this;
-
-            if (widget.readyState) {
-
-                if (typeof (callback) === 'function') {
-                    callback();
-                }
-
-            } else {
-                widget.readyCallbacks.push(callback);
-            }
-        },
-
-        /**
-         * On ready handler
-         */
-        _ready: function () {
-            var widget = this;
-
-            _.each(widget.readyCallbacks, function (readyCallback) {
-                if (typeof (readyCallback) === 'function') {
-                    readyCallback();
-                }
-            });
-
-            // Mark as ready
-            widget.readyState = true;
-
-            // Remove handlers
-            widget.readyCallbacks.splice(0, widget.readyCallbacks.length);
-        },
-
-        /**
          * Activate coordinate search
          */
         activate: function () {
-            this.mapClickHandler.activate();
-            this.mbMap.map.element.addClass('crosshair');
+            this._setupMapClickHandler();
+            this.model.setMapCursorStyle('crosshair');
         },
 
         /**
          * Deactivate coordinate search
          */
         deactivate: function () {
-            this.mapClickHandler.deactivate();
-            this.mbMap.map.element.removeClass('crosshair');
+            this.model.deactivateOnClickHandlerByKey(this.mapClickHandler);
+            this.mapClickHandler = null;
+
+            this.model.setMapCursorStyle('');
         },
 
         /**
          * On map click handler
          *
-         * @param e selected pixel
+         * @param event selected pixel
          * @private
          */
-        _mapClick: function (e) {
-            var lonlat = this.mbMap.map.olMap.getLonLatFromPixel(e.xy);
-            this.clickPoint = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
-
-            this.currentMapCoordinate = this._formatOutputString(lonlat, e.object.units);
-
-            this.lon = lonlat.lon;
-            this.lat = lonlat.lat;
+        _mapClick: function (event) {
+            this.coordinatesObject = this.model.getCoordinatesFromMapClickEvent(event);
+            this.currentMapCoordinate = this._formatOutputString(this.coordinatesObject, this.model.getUnitsOfCurrentProjection());
 
             this._transformCoordinates();
             this._updateFields();
@@ -398,34 +384,42 @@
         _transformCoordinates: function () {
             var selectedSrs = $('select.srs', this.element).val();
 
-            if (null === this.lon || null === this.lat || null === selectedSrs) {
+            if (typeof this.coordinatesObject === 'undefined' || null === selectedSrs) {
                 return;
             }
 
-            var currentProjection = this.mbMap.map.olMap.getProjectionObject(),
-                projectionToTransform = new OpenLayers.Projection(selectedSrs);
+            var currentProjection = proj4.Proj(this.model.getCurrentProjectionCode()),
+                projectionToTransform = proj4.Proj(selectedSrs),
+                coordinatesToTransform = $.extend(this.coordinatesObject);
 
-            var lonlat = new OpenLayers.LonLat(this.lon, this.lat).transform(currentProjection, projectionToTransform);
+            var transformedCoordinatesObject = proj4.transform(currentProjection, projectionToTransform, coordinatesToTransform);
 
             this.transformedCoordinate = this._formatOutputString(
-                lonlat,
-                projectionToTransform.proj.units
+                transformedCoordinatesObject,
+                projectionToTransform.units
             );
         },
 
         /**
          * Format output coordinate string
          *
-         * @param {OpenLayersPoint} point
+         * @param {x,y} coordinates
+         * @param {string} unit
          * @returns {string}
          * @private
          */
-        _formatOutputString: function (point, unit) {
-            var decimal = (unit  === 'm')
-                ? this.DECIMAL_METRIC
-                : this.DECIMAL_ANGULAR;
+        _formatOutputString: function (coordinates, unit) {
+            var formattedOutputString = '';
 
-            return point.lon.toFixed(decimal) + this.STRING_SEPARATOR + point.lat.toFixed(decimal);
+            if (typeof coordinates !== 'undefined') {
+                var decimal = (unit  === 'm')
+                    ? this.DECIMAL_METRIC
+                    : this.DECIMAL_ANGULAR;
+
+                formattedOutputString = coordinates.x.toFixed(decimal) + this.STRING_SEPARATOR + coordinates.y.toFixed(decimal);
+            }
+
+            return formattedOutputString;
         },
 
         /**
@@ -437,7 +431,7 @@
             $('input.map-coordinate', this.element).val(this.currentMapCoordinate);
             $('input.input-coordinate', this.element).val(this.transformedCoordinate);
 
-            this._showFeature();
+            //this._showFeature();
         },
 
         /**
@@ -459,7 +453,7 @@
          * @private
          */
         _showFeature: function () {
-            this.feature = new OpenLayers.Feature.Vector(this.clickPoint);
+            this.feature = this.model.getVectorFeature(this.clickPoint); // new OpenLayers.Feature.Vector(this.clickPoint);
 
             this.highlightLayer.olLayer.removeAllFeatures();
             this.highlightLayer.olLayer.addFeatures(this.feature);
@@ -497,11 +491,11 @@
                 return;
             }
 
-            if (this._areCoordinatesValid()) {
+            if (this._areCoordinatesValid(this.coordinatesObject)) {
                 this.highlightLayer.olLayer.removeAllFeatures();
                 this.highlightLayer.olLayer.addFeatures(this.feature);
 
-                var lonLat = new OpenLayers.LonLat(this.lon, this.lat);
+                var lonLat = this.model.getLonLat(this.lon, this.lat); //new OpenLayers.LonLat(this.lon, this.lat);
 
                 this.mbMap.map.olMap.setCenter(lonLat, this.ZOOM);
             } else {
@@ -514,21 +508,26 @@
          * Check if coordinates to navigate are valid
          *
          * @returns boolean
+         * @param {{x},{y}} coordinates
          * @private
          */
-        _areCoordinatesValid: function () {
-            if (!$.isNumeric(this.lon) || !$.isNumeric(this.lat)) {
+        _areCoordinatesValid: function (coordinates) {
+            if (typeof coordinates === 'undefined'
+                || !$.isNumeric(coordinates.x)
+                || !$.isNumeric(coordinates.y)
+            ) {
                 return false;
             }
 
-            var Point = new Proj4js.Point(this.lon, this.lat),
-                currentProjection = this.mbMap.map.olMap.getProjectionObject();
+            var areValid = false,
+                currentProjection = proj4.Proj(this.model.getCurrentProjectionCode()),
+                theSameCoordinates = proj4.transform(currentProjection, currentProjection, coordinates);
 
-            Proj4js.transform(currentProjection, currentProjection, Point);
+            if (theSameCoordinates === coordinates) {
+                areValid = true;
+            }
 
-            var lonLat = new OpenLayers.LonLat(Point.x, Point.y);
-
-            return this.mbMap.map.olMap.isValidLonLat(lonLat);
+            return areValid;
         },
 
         /**
@@ -551,26 +550,18 @@
                 inputCoordinates = $('input.input-coordinate').val(),
                 inputCoordinatesArray = inputCoordinates.split(/ \s*/);
 
+            var currentProjection = proj4.Proj(this.model.getCurrentProjectionCode()),
+                projectionToTransform = proj4.Proj(selectedSrs);
 
-            var lat = inputCoordinatesArray.pop(),
-                lon = inputCoordinatesArray.pop();
+            var transformedCoordinates = proj4.transform(currentProjection, projectionToTransform, inputCoordinatesArray);
 
-            var mapProjection = this.mbMap.map.olMap.getProjectionObject(),
-                selectedProjection = new OpenLayers.Projection(selectedSrs);
-
-            var lonlat = new OpenLayers.LonLat(lon, lat).transform(selectedProjection, mapProjection);
-
-            this.lat = lonlat.lat;
-            this.lon = lonlat.lon;
-
-            if (this._areCoordinatesValid()) {
+            if (this._areCoordinatesValid(transformedCoordinates)) {
                 this.currentMapCoordinate = this._formatOutputString(
-                    lonlat,
-                    mapProjection.proj.units
+                    transformedCoordinates,
+                    currentProjection.units
                 );
 
                 this.transformedCoordinate = inputCoordinates;
-                this.clickPoint = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
 
                 this._updateFields();
             }
