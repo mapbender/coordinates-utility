@@ -514,8 +514,8 @@
             }
 
             if (this._areCoordinatesValid(this.coordinatesObject)) {
-                this.model.centerMapByCoordinates([this.coordinatesObject.x, this.coordinatesObject.y])
-                    .zoomToZoomLevel(this.ZOOM);
+                this.model.setCenter([this.coordinatesObject.x, this.coordinatesObject.y])
+                    .setZoom(this.ZOOM);
             } else {
                 Mapbender.error(Mapbender.trans("mb.coordinatesutility.widget.error.invalidCoordinates"));
             }
