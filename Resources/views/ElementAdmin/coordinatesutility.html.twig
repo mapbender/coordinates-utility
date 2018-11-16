@@ -11,7 +11,7 @@
 
     <div class="clearContainer"></div>
 
-    {{ form_label(form.configuration.srsList) }}{{ form_widget(form.configuration.srsList, { 'attr': {'class': 'srs-autocomplete'} }) }}
+    {{ form_label(form.configuration.srsList) }}{{ form_widget(form.configuration.srsList, { 'attr': {'class': 'srs-autocomplete', 'data-autocomplete-url': path('srs_autocomplete')}}) }}
     <div id="srs-autocomplete-variants"></div>
 
     <div class="clearContainer"></div>
