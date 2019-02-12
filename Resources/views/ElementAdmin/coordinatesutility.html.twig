@@ -16,6 +16,10 @@
 
     <div class="clearContainer"></div>
 
+    {{ form_label(form.configuration.zoomlevel) }}{{ form_widget(form.configuration.zoomlevel) }}
+    <div class="clearContainer"></div>
+
+
     <div class="left">
     {{ form_widget(form.configuration.addMapSrsList) }}<label for="{{form.configuration.addMapSrsList.vars.id}}" class="labelCheck">{{ "mb.coordinatesutility.backend.addMapSrsList" | trans }}</label>
     </div>
