@@ -62,6 +62,7 @@ class CoordinatesUtility extends Element
             'target'    => null,
             'srsList'   => '',
             'addMapSrsList' => true,
+            'zoomlevel' => 6,
         ];
     }
 
