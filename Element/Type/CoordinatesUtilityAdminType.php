@@ -58,6 +58,16 @@ class CoordinatesUtilityAdminType extends AbstractType
             ])
             ->add('addMapSrsList', 'checkbox', [
                 'required' => false
-            ]);
+            ])
+            ->add('zoomlevel', 'integer',
+                [
+                    'label' => "Zoom-Level",
+                    'empty_data'  => 0,
+                    'attr' => [
+                        'type' => 'number',
+                        'min' => 0
+                    ]
+                ])
+        ;
     }
 }
