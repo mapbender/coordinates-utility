@@ -502,12 +502,17 @@
                 this.highlightLayer.olLayer.addFeatures(this.feature);
 
                 var lonLat = new OpenLayers.LonLat(this.lon, this.lat);
+                var zoomlevel = this.options.zoomlevel;
+                var olMapMaxZoom = this.mbMap.map.olMap.numZoomLevels;
 
-                this.mbMap.map.olMap.setCenter(lonLat, this.ZOOM);
+                if (zoomlevel && zoomlevel < olMapMaxZoom) {
+                    this.mbMap.map.olMap.setCenter(lonLat, zoomlevel);
+                } else {
+                    this.mbMap.map.olMap.setCenter(lonLat, this.ZOOM);
+                }
             } else {
                 Mapbender.error(Mapbender.trans("mb.coordinatesutility.widget.error.invalidCoordinates"));
             }
-
         },
 
         /**
