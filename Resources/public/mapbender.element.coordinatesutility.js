@@ -30,7 +30,6 @@
         DECIMAL_ANGULAR: 6,
         DECIMAL_METRIC: 2,
         STRING_SEPARATOR: ' ',
-        ZOOM: 10,
 
         /**
          * Widget constructor
@@ -502,12 +501,15 @@
                 this.highlightLayer.olLayer.addFeatures(this.feature);
 
                 var lonLat = new OpenLayers.LonLat(this.lon, this.lat);
+                var zoomlevel = this.options.zoomlevel;
+                var olMapMaxZoom = this.mbMap.map.olMap.numZoomLevels -1;
 
-                this.mbMap.map.olMap.setCenter(lonLat, this.ZOOM);
+                if (zoomlevel <= olMapMaxZoom) {
+                    this.mbMap.map.olMap.setCenter(lonLat, zoomlevel);
+                }
             } else {
                 Mapbender.error(Mapbender.trans("mb.coordinatesutility.widget.error.invalidCoordinates"));
             }
-
         },
 
         /**

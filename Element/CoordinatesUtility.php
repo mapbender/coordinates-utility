@@ -62,6 +62,7 @@ class CoordinatesUtility extends Element
             'target'    => null,
             'srsList'   => '',
             'addMapSrsList' => true,
+            'zoomlevel' => 6,
         ];
     }
 
@@ -119,6 +120,17 @@ class CoordinatesUtility extends Element
         }
 
         return $configuration;
+    }
+
+    public function getPublicConfiguration()
+    {
+        $conf = parent::getPublicConfiguration();
+
+        if (!isset($conf['zoomlevel'])) {
+            $conf['zoomlevel'] = CoordinatesUtility::getDefaultConfiguration()['zoomlevel'];
+        }
+
+        return $conf;
     }
 
     /**
