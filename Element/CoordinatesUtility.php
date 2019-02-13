@@ -122,6 +122,17 @@ class CoordinatesUtility extends Element
         return $configuration;
     }
 
+    public function getPublicConfiguration()
+    {
+        $conf = parent::getPublicConfiguration();
+
+        if (!isset($conf['zoomlevel'])) {
+            $conf['zoomlevel'] = CoordinatesUtility::getDefaultConfiguration()['zoomlevel'];
+        }
+
+        return $conf;
+    }
+
     /**
      * @param $srsList
      * @return mixed
