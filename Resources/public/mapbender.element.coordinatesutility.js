@@ -30,7 +30,6 @@
         DECIMAL_ANGULAR: 6,
         DECIMAL_METRIC: 2,
         STRING_SEPARATOR: ' ',
-        ZOOM: 10,
 
         /**
          * Widget constructor
@@ -503,12 +502,10 @@
 
                 var lonLat = new OpenLayers.LonLat(this.lon, this.lat);
                 var zoomlevel = this.options.zoomlevel;
-                var olMapMaxZoom = this.mbMap.map.olMap.numZoomLevels;
+                var olMapMaxZoom = this.mbMap.map.olMap.numZoomLevels -1;
 
-                if (zoomlevel && zoomlevel < olMapMaxZoom) {
+                if (zoomlevel <= olMapMaxZoom) {
                     this.mbMap.map.olMap.setCenter(lonLat, zoomlevel);
-                } else {
-                    this.mbMap.map.olMap.setCenter(lonLat, this.ZOOM);
                 }
             } else {
                 Mapbender.error(Mapbender.trans("mb.coordinatesutility.widget.error.invalidCoordinates"));
