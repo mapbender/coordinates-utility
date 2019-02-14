@@ -377,6 +377,18 @@
             this.mapClickHandler.deactivate();
             this.mbMap.map.element.removeClass('crosshair');
         },
+        /**
+         * New-style sidepane API: containing pane is visible
+         */
+        reveal: function() {
+            this.activate();
+        },
+        /**
+         * New-style sidepane API: containing pane is hidden
+         */
+        hide: function() {
+            this.deactivate();
+        },
 
         /**
          * On map click handler
