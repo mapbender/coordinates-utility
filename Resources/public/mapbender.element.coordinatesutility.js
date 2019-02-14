@@ -12,7 +12,6 @@
 
         isPopupDialog: false,
 
-        readyCallbacks: [],
         callback:       null,
 
         mbMap:          null,
@@ -71,7 +70,6 @@
             this._setupEventListeners();
 
             this._trigger('ready');
-            this._ready();
         },
 
         /**
@@ -324,42 +322,6 @@
 
             this.deactivate();
             this._resetFields();
-        },
-
-        /**
-         * On ready handler
-         */
-        ready: function (callback) {
-            var widget = this;
-
-            if (widget.readyState) {
-
-                if (typeof (callback) === 'function') {
-                    callback();
-                }
-
-            } else {
-                widget.readyCallbacks.push(callback);
-            }
-        },
-
-        /**
-         * On ready handler
-         */
-        _ready: function () {
-            var widget = this;
-
-            _.each(widget.readyCallbacks, function (readyCallback) {
-                if (typeof (readyCallback) === 'function') {
-                    readyCallback();
-                }
-            });
-
-            // Mark as ready
-            widget.readyState = true;
-
-            // Remove handlers
-            widget.readyCallbacks.splice(0, widget.readyCallbacks.length);
         },
 
         /**
