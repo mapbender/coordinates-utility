@@ -37,7 +37,7 @@ class CoordinatesUtility extends Element
     /**
      * @inheritdoc
      */
-    static public function listAssets()
+    public function getAssets()
     {
         return [
             'js' => [
@@ -93,19 +93,9 @@ class CoordinatesUtility extends Element
     /**
      * @inheritdoc
      */
-    public function render()
+    public function getFrontendTemplatePath($suffix = '.html.twig')
     {
-        return $this
-            ->container
-            ->get('templating')
-            ->render(
-                'MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.html.twig',
-                [
-                    'id'            => $this->getId(),
-                    'configuration' => $this->getConfiguration(),
-                    'title'         => $this->getTitle()
-                ]
-            );
+        return 'MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.html.twig';
     }
 
     /**

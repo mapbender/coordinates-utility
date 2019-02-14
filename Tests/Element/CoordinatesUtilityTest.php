@@ -38,11 +38,11 @@ class CoordinatesUtilityTest extends WebTestCase
     /**
      * Test list of assets
      */
-    public function testListAssets()
+    public function testGetAssets()
     {
         $actual = $this
             ->coordinatesUtility
-            ->listAssets();
+            ->getAssets();
 
         $expected = [
             'js' => [
