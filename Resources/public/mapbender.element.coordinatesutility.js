@@ -290,12 +290,16 @@
         },
 
         /**
-         * Provide default action
+         * Provide default action (Button control)
          *
          * @returns {action}
          */
-        defaultAction: function () {
-            return this.open();
+        defaultAction: function (callback) {
+            if (!this.popupWindow || this.popupWindow.$element.hasClass('hidden')) {
+                return this.open(callback);
+            } else {
+                this.close();
+            }
         },
 
         /**
@@ -313,6 +317,10 @@
          */
         close: function () {
             this.popupWindow.$element.addClass('hidden');
+            if (this.callback) {
+                this.callback.call();
+                this.callback = null;
+            }
 
             this.deactivate();
             this._resetFields();
