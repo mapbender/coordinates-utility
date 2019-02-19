@@ -344,12 +344,16 @@
          */
         reveal: function() {
             this.activate();
+            if (this.clickPoint) {
+                this._showFeature();
+            }
         },
         /**
          * New-style sidepane API: containing pane is hidden
          */
         hide: function() {
             this.deactivate();
+            this._removeFeature();
         },
 
         /**
