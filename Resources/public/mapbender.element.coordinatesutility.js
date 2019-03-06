@@ -15,7 +15,6 @@
         callback:       null,
 
         mbMap:          null,
-        mapQuery:       null,
         highlightLayer: null,
         containerInfo:  null,
         feature:        null,
@@ -55,11 +54,7 @@
             var options = this.options;
 
             this.mbMap = $("#" + this.options.target).data("mapbenderMbMap");
-            this.mapQuery = $(this.mbMap.element).data('mapQuery');
-            this.highlightLayer = this.mapQuery.layers({
-                type: 'vector',
-                label: 'Highlight'
-            });
+            this.highlightLayer = new OpenLayers.Layer.Vector();
 
             this.isPopUpDialog = options.type === "dialog";
 
@@ -330,6 +325,7 @@
         activate: function () {
             this.mapClickHandler.activate();
             this.mbMap.map.element.addClass('crosshair');
+            this.mbMap.map.olMap.addLayer(this.highlightLayer);
         },
 
         /**
@@ -338,6 +334,7 @@
         deactivate: function () {
             this.mapClickHandler.deactivate();
             this.mbMap.map.element.removeClass('crosshair');
+            this.mbMap.map.olMap.removeLayer(this.highlightLayer);
         },
         /**
          * New-style sidepane API: containing pane is visible
@@ -446,8 +443,8 @@
         _showFeature: function () {
             this.feature = new OpenLayers.Feature.Vector(this.clickPoint);
 
-            this.highlightLayer.olLayer.removeAllFeatures();
-            this.highlightLayer.olLayer.addFeatures(this.feature);
+            this.highlightLayer.removeAllFeatures();
+            this.highlightLayer.addFeatures(this.feature);
         },
 
         /**
@@ -457,7 +454,7 @@
          */
         _removeFeature: function () {
             if (this.feature) {
-                this.highlightLayer.olLayer.removeFeatures(this.feature);
+                this.highlightLayer.removeFeatures(this.feature);
             }
         },
 
@@ -483,8 +480,8 @@
             }
 
             if (this._areCoordinatesValid()) {
-                this.highlightLayer.olLayer.removeAllFeatures();
-                this.highlightLayer.olLayer.addFeatures(this.feature);
+                this.highlightLayer.removeAllFeatures();
+                this.highlightLayer.addFeatures(this.feature);
 
                 var lonLat = new OpenLayers.LonLat(this.lon, this.lat);
                 var zoomlevel = this.options.zoomlevel;
