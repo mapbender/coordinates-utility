@@ -308,7 +308,9 @@
          * On close
          */
         close: function () {
-            this.popupWindow.$element.addClass('hidden');
+            if (this.popupWindow && this.popupWindow.$element) {
+                this.popupWindow.$element.addClass('hidden');
+            }
             if (this.callback) {
                 this.callback.call();
                 this.callback = null;
