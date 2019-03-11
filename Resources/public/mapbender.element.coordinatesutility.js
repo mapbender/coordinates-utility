@@ -6,7 +6,6 @@
 
     $.widget("mapbender.mbCoordinatesUtility", {
         options: {
-            autoOpen:  true,
             target:    null
         },
 

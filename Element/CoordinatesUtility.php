@@ -119,6 +119,10 @@ class CoordinatesUtility extends Element
         if (!isset($conf['zoomlevel'])) {
             $conf['zoomlevel'] = CoordinatesUtility::getDefaultConfiguration()['zoomlevel'];
         }
+        // Coords utility doesn't have an autoOpen backend option, and doesn't support it in the frontend
+        // However, some legacy / cloned / YAML-based etc Applications may have a value there that will
+        // royally confuse controlling buttons. Just make sure it's never there.
+        unset($conf['autoOpen']);
 
         return $conf;
     }
