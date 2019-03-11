@@ -533,9 +533,9 @@
          * @private
          */
         _transformCoordinateToMapSrs: function () {
-            var selectedSrs = $('select.srs', this.element).val(),
-                inputCoordinates = $('input.input-coordinate').val(),
-                inputCoordinatesArray = inputCoordinates.split(/ \s*/);
+            var selectedSrs = $('select.srs', this.element).val();
+            var inputCoordinates = $('input.input-coordinate',this.element).val();
+            var inputCoordinatesArray = inputCoordinates.split(/ \s*/);
 
 
             var lat = inputCoordinatesArray.pop(),
