@@ -95,24 +95,24 @@
 
             $('.copyClipBoard', widget.element).on('click',  $.proxy(widget._copyToClipboard, widget));
             $('.center-map', widget.element).on('click',  $.proxy(widget._centerMap, widget));
-
-            if (!widget.isPopUpDialog) {
-                var coordinateSearchButton = $('.coordinate-search');
-
-                coordinateSearchButton.on('click', function () {
-                    var isActive = $(this).hasClass('active');
-
-                    if (isActive) {
-                        widget.deactivate();
-                    } else {
-                        widget.activate();
-                    }
-
-                    $(this).toggleClass('active');
-                });
-
-                coordinateSearchButton.removeClass('hidden');
-            }
+            //
+            // if (!widget.isPopUpDialog) {
+            //     var coordinateSearchButton = $('.coordinate-search');
+            //
+            //     coordinateSearchButton.on('click', function () {
+            //         var isActive = $(this).hasClass('active');
+            //
+            //         if (isActive) {
+            //             widget.deactivate();
+            //         } else {
+            //             widget.activate();
+            //         }
+            //
+            //         $(this).toggleClass('active');
+            //     });
+            //
+            //     coordinateSearchButton.removeClass('hidden');
+            // }
         },
 
         /**
