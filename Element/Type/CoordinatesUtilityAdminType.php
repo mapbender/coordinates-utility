@@ -53,6 +53,7 @@ class CoordinatesUtilityAdminType extends AbstractType
                 'required' => false
             ])
             ->add('addMapSrsList', 'Symfony\Component\Form\Extension\Core\Type\CheckboxType', [
+                'label' => 'mb.coordinatesutility.backend.addMapSrsList',
                 'required' => false
             ])
             ->add('zoomlevel', 'Symfony\Component\Form\Extension\Core\Type\IntegerType',
