@@ -26,17 +26,6 @@ class CoordinatesUtility extends Element
     /**
      * @inheritdoc
      */
-    public static function getClassTags()
-    {
-        return [
-            'mb.coordinatesutility.tag.coordinate',
-            'mb.coordinatesutility.tag.map'
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getAssets()
     {
         return [
