@@ -97,7 +97,7 @@
             $('.center-map', widget.element).on('click',  $.proxy(widget._centerMap, widget));
 
             if (!widget.isPopUpDialog) {
-                var coordinateSearchButton = $('.coordinate-search');
+                var coordinateSearchButton = $('.coordinate-search', this.element);
 
                 coordinateSearchButton.on('click', function () {
                     var isActive = $(this).hasClass('active');
@@ -107,8 +107,6 @@
                     } else {
                         widget.activate();
                     }
-
-                    $(this).toggleClass('active');
                 });
 
                 coordinateSearchButton.removeClass('hidden');
@@ -327,6 +325,7 @@
             this.mapClickHandler.activate();
             this.mbMap.map.element.addClass('crosshair');
             this.mbMap.map.olMap.addLayer(this.highlightLayer);
+            $('.coordinate-search', this.element).addClass('active');
         },
 
         /**
@@ -336,6 +335,7 @@
             this.mapClickHandler.deactivate();
             this.mbMap.map.element.removeClass('crosshair');
             this.mbMap.map.olMap.removeLayer(this.highlightLayer);
+            $('.coordinate-search', this.element).removeClass('active');
         },
         /**
          * New-style sidepane API: containing pane is visible
