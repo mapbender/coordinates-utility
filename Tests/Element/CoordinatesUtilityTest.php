@@ -36,30 +36,6 @@ class CoordinatesUtilityTest extends WebTestCase
     }
 
     /**
-     * Test list of assets
-     */
-    public function testGetAssets()
-    {
-        $actual = $this
-            ->coordinatesUtility
-            ->getAssets();
-
-        $expected = [
-            'js' => [
-                'mapbender.element.coordinatesutility.js',
-            ],
-            'css' => [
-                'sass/element/coordinatesutility.scss'
-            ],
-            'trans' => [
-                'MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.json.twig'
-            ]
-        ];
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    /**
      * Test default configuration
      */
     public function testDefaultConfiguration()

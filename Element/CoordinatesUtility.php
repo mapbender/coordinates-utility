@@ -41,10 +41,10 @@ class CoordinatesUtility extends Element
     {
         return [
             'js' => [
-                'mapbender.element.coordinatesutility.js',
+                '@MapbenderCoordinatesUtilityBundle/Resources/public/mapbender.element.coordinatesutility.js',
             ],
             'css' => [
-                'sass/element/coordinatesutility.scss'
+                '@MapbenderCoordinatesUtilityBundle/Resources/public/sass/element/coordinatesutility.scss'
             ],
             'trans' => [
                 'MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.json.twig'
