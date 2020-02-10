@@ -11,13 +11,16 @@
 
     <div class="clearContainer"></div>
 
-    {{ form_label(form.configuration.srsList) }}{{ form_widget(form.configuration.srsList, { 'attr': {'class': 'srs-autocomplete'} }) }}
+    {{ form_label(form.configuration.srsList) }}{{ form_widget(form.configuration.srsList, { 'attr': {'class': 'srs-autocomplete', 'data-autocomplete-url': path('srs_autocomplete')}}) }}
     <div id="srs-autocomplete-variants"></div>
 
     <div class="clearContainer"></div>
 
+    {{ form_label(form.configuration.zoomlevel) }}{{ form_widget(form.configuration.zoomlevel) }}
+    <div class="clearContainer"></div>
+
     <div class="left">
-    {{ form_widget(form.configuration.addMapSrsList) }}<label for="{{form.configuration.addMapSrsList.vars.id}}" class="labelCheck">{{ "mb.coordinatesutility.backend.addMapSrsList" | trans }}</label>
+    {{ form_widget(form.configuration.addMapSrsList) }}{{ form_label(form.configuration.addMapSrsList) }}
     </div>
 
     <div class="clearContainer"></div>

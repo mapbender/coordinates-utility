@@ -26,25 +26,14 @@ class CoordinatesUtility extends Element
     /**
      * @inheritdoc
      */
-    public static function getClassTags()
-    {
-        return [
-            'mb.coordinatesutility.tag.coordinate',
-            'mb.coordinatesutility.tag.map'
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    static public function listAssets()
+    public function getAssets()
     {
         return [
             'js' => [
-                'mapbender.element.coordinatesutility.js',
+                '@MapbenderCoordinatesUtilityBundle/Resources/public/mapbender.element.coordinatesutility.js',
             ],
             'css' => [
-                'sass/element/coordinatesutility.scss'
+                '@MapbenderCoordinatesUtilityBundle/Resources/public/sass/element/coordinatesutility.scss'
             ],
             'trans' => [
                 'MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.json.twig'
@@ -62,6 +51,7 @@ class CoordinatesUtility extends Element
             'target'    => null,
             'srsList'   => '',
             'addMapSrsList' => true,
+            'zoomlevel' => 6,
         ];
     }
 
@@ -92,19 +82,9 @@ class CoordinatesUtility extends Element
     /**
      * @inheritdoc
      */
-    public function render()
+    public function getFrontendTemplatePath($suffix = '.html.twig')
     {
-        return $this
-            ->container
-            ->get('templating')
-            ->render(
-                'MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.html.twig',
-                [
-                    'id'            => $this->getId(),
-                    'configuration' => $this->getConfiguration(),
-                    'title'         => $this->getTitle()
-                ]
-            );
+        return 'MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.html.twig';
     }
 
     /**
@@ -119,6 +99,21 @@ class CoordinatesUtility extends Element
         }
 
         return $configuration;
+    }
+
+    public function getPublicConfiguration()
+    {
+        $conf = parent::getPublicConfiguration();
+
+        if (!isset($conf['zoomlevel'])) {
+            $conf['zoomlevel'] = CoordinatesUtility::getDefaultConfiguration()['zoomlevel'];
+        }
+        // Coords utility doesn't have an autoOpen backend option, and doesn't support it in the frontend
+        // However, some legacy / cloned / YAML-based etc Applications may have a value there that will
+        // royally confuse controlling buttons. Just make sure it's never there.
+        unset($conf['autoOpen']);
+
+        return $conf;
     }
 
     /**

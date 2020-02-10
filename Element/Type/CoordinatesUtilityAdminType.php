@@ -4,8 +4,7 @@ namespace Mapbender\CoordinatesUtilityBundle\Element\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Mapbender\CoordinatesUtilityBundle\Element\EventListener\CoordinatesUtilitySubscriber;
 
 class CoordinatesUtilityAdminType extends AbstractType
@@ -18,10 +17,7 @@ class CoordinatesUtilityAdminType extends AbstractType
         return 'CoordinatesUtility';
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'application' => null
@@ -37,27 +33,38 @@ class CoordinatesUtilityAdminType extends AbstractType
         $builder->addEventSubscriber($subscriber);
 
         $builder
-            ->add('title', 'text', [
+            ->add('title', 'Symfony\Component\Form\Extension\Core\Type\TextType', [
                 'required' => false
             ])
-            ->add('type', 'choice', [
+            ->add('type', 'Symfony\Component\Form\Extension\Core\Type\ChoiceType', [
                 'required' => true,
                 'choices'  => [
-                    'element' => 'Element',
-                    'dialog'  => 'Dialog'
-                ]
+                    'Element' => 'element',
+                    'Dialog' => 'dialog',
+                ],
+                'choices_as_values' => true,
             ])
-            ->add('target', 'target_element',[
+            ->add('target', 'Mapbender\CoreBundle\Element\Type\TargetElementType',[
                 'element_class' => 'Mapbender\\CoreBundle\\Element\\Map',
                 'application'   => $options['application'],
-                'property_path' => '[target]',
                 'required'      => false
             ])
-            ->add('srsList', 'text', [
+            ->add('srsList', 'Symfony\Component\Form\Extension\Core\Type\TextType', [
                 'required' => false
             ])
-            ->add('addMapSrsList', 'checkbox', [
+            ->add('addMapSrsList', 'Symfony\Component\Form\Extension\Core\Type\CheckboxType', [
+                'label' => 'mb.coordinatesutility.backend.addMapSrsList',
                 'required' => false
-            ]);
+            ])
+            ->add('zoomlevel', 'Symfony\Component\Form\Extension\Core\Type\IntegerType',
+                [
+                    'label' => "Zoom-Level",
+                    'empty_data'  => 0,
+                    'attr' => [
+                        'type' => 'number',
+                        'min' => 0
+                    ]
+                ])
+        ;
     }
 }

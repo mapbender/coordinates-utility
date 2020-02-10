@@ -14,7 +14,8 @@ $(".srs-autocomplete input")
     })
     .autocomplete({
         source: function (request, response) {
-            $.getJSON(Routing.generate('srs_autocomplete'), {
+            var url = $(this.element).data('autocomplete-url');
+            $.getJSON(url, {
                 term: extractLast(request.term)
             }, response);
         },
