@@ -33,6 +33,11 @@ class CoordinatesUtilityAdminType extends AbstractType
         $builder->addEventSubscriber($subscriber);
 
         $builder
+            ->add('target', 'Mapbender\CoreBundle\Element\Type\TargetElementType',[
+                'element_class' => 'Mapbender\\CoreBundle\\Element\\Map',
+                'application'   => $options['application'],
+                'required'      => false
+            ])
             ->add('type', 'Symfony\Component\Form\Extension\Core\Type\ChoiceType', [
                 'required' => true,
                 'choices'  => [
@@ -41,16 +46,7 @@ class CoordinatesUtilityAdminType extends AbstractType
                 ],
                 'choices_as_values' => true,
             ])
-            ->add('target', 'Mapbender\CoreBundle\Element\Type\TargetElementType',[
-                'element_class' => 'Mapbender\\CoreBundle\\Element\\Map',
-                'application'   => $options['application'],
-                'required'      => false
-            ])
             ->add('srsList', 'Symfony\Component\Form\Extension\Core\Type\TextType', [
-                'required' => false
-            ])
-            ->add('addMapSrsList', 'Symfony\Component\Form\Extension\Core\Type\CheckboxType', [
-                'label' => 'mb.coordinatesutility.backend.addMapSrsList',
                 'required' => false
             ])
             ->add('zoomlevel', 'Symfony\Component\Form\Extension\Core\Type\IntegerType',
@@ -62,6 +58,10 @@ class CoordinatesUtilityAdminType extends AbstractType
                         'min' => 0
                     ]
                 ])
+            ->add('addMapSrsList', 'Symfony\Component\Form\Extension\Core\Type\CheckboxType', [
+                'label' => 'mb.coordinatesutility.backend.addMapSrsList',
+                'required' => false,
+            ])
         ;
     }
 }
