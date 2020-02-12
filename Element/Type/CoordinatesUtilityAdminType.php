@@ -33,9 +33,6 @@ class CoordinatesUtilityAdminType extends AbstractType
         $builder->addEventSubscriber($subscriber);
 
         $builder
-            ->add('title', 'Symfony\Component\Form\Extension\Core\Type\TextType', [
-                'required' => false
-            ])
             ->add('type', 'Symfony\Component\Form\Extension\Core\Type\ChoiceType', [
                 'required' => true,
                 'choices'  => [
