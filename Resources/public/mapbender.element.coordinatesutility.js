@@ -8,6 +8,7 @@
         options: {
             target:    null
         },
+        mapClickActive: false,
 
         isPopupDialog: false,
 
@@ -119,15 +120,12 @@
          * @private
          */
         _setupMapClickHandler: function () {
-            var widget = this;
-
-            if (!widget.mapClickHandler) {
-                widget.mapClickHandler = new OpenLayers.Handler.Click(
-                    widget,
-                    { 'click': widget._mapClick },
-                    { map: widget.mbMap.map.olMap }
-                );
-            }
+            this.mapClickHandler = new OpenLayers.Handler.Click(
+                this,
+                { 'click': this._mapClick },
+                { map: this.mbMap.map.olMap }
+            );
+            this.mapClickHandler.activate();
         },
 
         /**
@@ -322,20 +320,20 @@
          * Activate coordinate search
          */
         activate: function () {
-            this.mapClickHandler.activate();
             this.mbMap.map.element.addClass('crosshair');
             this.mbMap.map.olMap.addLayer(this.highlightLayer);
             $('.coordinate-search', this.element).addClass('active');
+            this.mapClickActive = true;
         },
 
         /**
          * Deactivate coordinate search
          */
         deactivate: function () {
-            this.mapClickHandler.deactivate();
             this.mbMap.map.element.removeClass('crosshair');
             this.mbMap.map.olMap.removeLayer(this.highlightLayer);
             $('.coordinate-search', this.element).removeClass('active');
+            this.mapClickActive = false;
         },
         /**
          * New-style sidepane API: containing pane is visible
@@ -361,6 +359,9 @@
          * @private
          */
         _mapClick: function (e) {
+            if (!this.mapClickActive) {
+                return;
+            }
             var lonlat = this.mbMap.map.olMap.getLonLatFromPixel(e.xy);
             this.clickPoint = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
 
