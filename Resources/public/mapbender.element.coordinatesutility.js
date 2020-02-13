@@ -507,14 +507,7 @@
 
             if (this._areCoordinatesValid(this.lon, this.lat)) {
                 this._showFeature();
-
-                var lonLat = new OpenLayers.LonLat(this.lon, this.lat);
-                var zoomlevel = this.options.zoomlevel;
-                var olMapMaxZoom = this.mbMap.map.olMap.numZoomLevels -1;
-
-                if (zoomlevel <= olMapMaxZoom) {
-                    this.mbMap.map.olMap.setCenter(lonLat, zoomlevel);
-                }
+                this.mbMap.getModel().centerXy(this.lon, this.lat, {zoom: this.options.zoomlevel});
             } else {
                 Mapbender.error(Mapbender.trans("mb.coordinatesutility.widget.error.invalidCoordinates"));
             }
