@@ -16,7 +16,6 @@
 
         mbMap:          null,
         highlightLayer: null,
-        mapClickHandler: null,
 
         currentMapCoordinate: null,
         transformedCoordinate: null,
@@ -55,7 +54,6 @@
             this.isPopUpDialog = !this.element.closest('.sidePane,.sideContent').length;
 
             this._initializeMissingSrsDefinitions(this.options.srsList);
-            this._setupMapClickHandler();
             this._setupButtons();
             this._setupSrsDropdown();
             this._setupEventListeners();
@@ -108,20 +106,6 @@
 
                 coordinateSearchButton.removeClass('hidden');
             }
-        },
-
-        /**
-         * Setup map click handler
-         *
-         * @private
-         */
-        _setupMapClickHandler: function () {
-            this.mapClickHandler = new OpenLayers.Handler.Click(
-                this,
-                { 'click': this._mapClick },
-                { map: this.mbMap.map.olMap }
-            );
-            this.mapClickHandler.activate();
         },
 
         /**
@@ -236,6 +220,9 @@
                 widget._recalculateDisplayCoordinate($(this).val());
             });
             $('input.input-coordinate', widget.element).on('change', $.proxy(widget._transformCoordinateToMapSrs, widget));
+            this.mbMap.element.on('mbmapclick', function(event, data) {
+                widget._mapClick(event, data);
+            });
         },
 
         /**
@@ -353,24 +340,23 @@
         /**
          * On map click handler
          *
-         * @param e selected pixel
+         * @param {Event} event
+         * @param {*} data
          * @private
          */
-        _mapClick: function (e) {
+        _mapClick: function (event, data) {
             if (!this.mapClickActive) {
                 return;
             }
-            var lonlat = this.mbMap.map.olMap.getLonLatFromPixel(e.xy);
-            this.currentMapCoordinate = this._formatOutputString(lonlat.lon, lonlat.lat);
-
-            this.lon = lonlat.lon;
-            this.lat = lonlat.lat;
+            var x = this.lon = data.coordinate[0];
+            var y = this.lat = data.coordinate[1];
+            var mapSrs = this.mbMap.getModel().getCurrentProjectionCode();
+            this.currentMapCoordinate = this._formatOutputString(x, y, mapSrs);
 
             var selectedSrs = $('select.srs', this.element).val();
             if (selectedSrs) {
-                var mapSrs = this.mbMap.getModel().getCurrentProjectionCode();
                 if (selectedSrs !== mapSrs) {
-                    var transformed = this._transformCoordinate(this.lon, this.lat, selectedSrs, mapSrs);
+                    var transformed = this._transformCoordinate(x, y, selectedSrs, mapSrs);
                     this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
                 } else {
                     this.transformedCoordinate = this.currentMapCoordinate;
@@ -402,13 +388,12 @@
          *
          * @param {number} x
          * @param {number} y
-         * @param {string} [srsCode] implicitly current map srs
+         * @param {string} srsCode
          * @returns {string}
          * @private
          */
         _formatOutputString: function (x, y, srsCode) {
-            var srsCode_ = srsCode || this.mbMap.getModel().getCurrentProjectionCode();
-            var decimals = (this.mbMap.getModel().getProjectionUnitsPerMeter(srsCode_) > 0.25)
+            var decimals = (this.mbMap.getModel().getProjectionUnitsPerMeter(srsCode) > 0.25)
                 ? this.DECIMAL_METRIC
                 : this.DECIMAL_ANGULAR;
 
