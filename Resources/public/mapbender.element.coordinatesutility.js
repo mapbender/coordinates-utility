@@ -365,7 +365,7 @@
             var lonlat = this.mbMap.map.olMap.getLonLatFromPixel(e.xy);
             this.clickPoint = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
 
-            this.currentMapCoordinate = this._formatOutputString(lonlat, e.object.units);
+            this.currentMapCoordinate = this._formatOutputString(lonlat.lon, lonlat.lat);
 
             this.lon = lonlat.lon;
             this.lat = lonlat.lat;
@@ -392,24 +392,27 @@
             var lonlat = new OpenLayers.LonLat(this.lon, this.lat).transform(currentProjection, projectionToTransform);
 
             this.transformedCoordinate = this._formatOutputString(
-                lonlat,
-                projectionToTransform.proj.units
+                lonlat.lon, lonlat.lat,
+                selectedSrs
             );
         },
 
         /**
          * Format output coordinate string
          *
-         * @param {OpenLayersPoint} point
+         * @param {number} x
+         * @param {number} y
+         * @param {string} [srsCode]
          * @returns {string}
          * @private
          */
-        _formatOutputString: function (point, unit) {
-            var decimal = (unit  === 'm')
+        _formatOutputString: function (x, y, srsCode) {
+            var srsCode_ = srsCode || this.mbMap.getModel().getCurrentProjectionCode();
+            var decimals = (this.mbMap.getModel().getProjectionUnitsPerMeter(srsCode_) < 0.25)
                 ? this.DECIMAL_METRIC
                 : this.DECIMAL_ANGULAR;
 
-            return point.lon.toFixed(decimal) + this.STRING_SEPARATOR + point.lat.toFixed(decimal);
+            return x.toFixed(decimals) + this.STRING_SEPARATOR + y.toFixed(decimals);
         },
 
         /**
@@ -551,10 +554,7 @@
             this.lon = lonlat.lon;
 
             if (this._areCoordinatesValid(lonlat.lon, lonlat.lat)) {
-                this.currentMapCoordinate = this._formatOutputString(
-                    lonlat,
-                    mapProjection.proj.units
-                );
+                this.currentMapCoordinate = this._formatOutputString(lonlat.lon, lonlat.lat);
 
                 this.transformedCoordinate = inputCoordinates;
                 this.clickPoint = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
