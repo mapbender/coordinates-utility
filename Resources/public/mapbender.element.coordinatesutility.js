@@ -234,7 +234,6 @@
             var widget = this;
 
             $(document).on('mbmapsrschanged', $.proxy(widget._resetFields, widget));
-            $(document).on('mbmapsrsadded', $.proxy(widget._resetFields, widget));
 
             $('select.srs', widget.element).on('change', $.proxy(widget._transformCoordinateToSelectedSrs, widget));
             $('input.input-coordinate', widget.element).on('change', $.proxy(widget._transformCoordinateToMapSrs, widget));
@@ -563,17 +562,6 @@
 
                 this._updateFields();
             }
-        },
-
-        /**
-         * On map SRS added handler
-         *
-         * @param event
-         * @param srsObj
-         * @private
-         */
-        _onMapSrsAdded: function (event, srsObj) {
-            $('.srs', this.element).append($('<option></option>').val(srsObj.name).html(srsObj.title));
         }
     });
 
