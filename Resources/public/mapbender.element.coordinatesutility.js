@@ -16,7 +16,6 @@
 
         mbMap:          null,
         highlightLayer: null,
-        containerInfo:  null,
         feature:        null,
         mapClickHandler: null,
 
