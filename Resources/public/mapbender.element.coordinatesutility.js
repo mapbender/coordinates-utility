@@ -219,9 +219,8 @@
          * @private
          */
         _setDefaultSelectedValue: function (dropdown) {
-            var currentSrs = this.mbMap.getModel().getCurrentProj();
-
-            dropdown.val(currentSrs.projCode);
+            var currentSrs = this.mbMap.getModel().getCurrentProjectionCode();
+            dropdown.val(currentSrs);
         },
 
         /**
