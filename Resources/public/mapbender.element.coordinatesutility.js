@@ -281,8 +281,12 @@
          * Provide default action (Button control)
          *
          * @returns {action}
+         * @todo: remove this entire method, rely on button to find "open" method (conflict with Mapbender <v3.0.8-beta1)
          */
         defaultAction: function (callback) {
+            if (!this.isPopUpDialog) {
+                throw new Error("Invalid attempt to control non-popup element via legacy defaultAction");
+            }
             if (!this.popupWindow || this.popupWindow.$element.hasClass('hidden')) {
                 return this.open(callback);
             } else {
