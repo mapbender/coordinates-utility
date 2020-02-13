@@ -481,7 +481,7 @@
                 return;
             }
 
-            if (this._areCoordinatesValid()) {
+            if (this._areCoordinatesValid(this.lon, this.lat)) {
                 this.highlightLayer.removeAllFeatures();
                 this.highlightLayer.addFeatures(this.feature);
 
@@ -503,12 +503,12 @@
          * @returns boolean
          * @private
          */
-        _areCoordinatesValid: function () {
-            if (!$.isNumeric(this.lon) || !$.isNumeric(this.lat)) {
+        _areCoordinatesValid: function (x, y) {
+            if (!$.isNumeric(x) || !$.isNumeric(y)) {
                 return false;
             }
 
-            var Point = new Proj4js.Point(this.lon, this.lat),
+            var Point = new Proj4js.Point(x, y),
                 currentProjection = this.mbMap.map.olMap.getProjectionObject();
 
             Proj4js.transform(currentProjection, currentProjection, Point);
@@ -550,7 +550,7 @@
             this.lat = lonlat.lat;
             this.lon = lonlat.lon;
 
-            if (this._areCoordinatesValid()) {
+            if (this._areCoordinatesValid(lonlat.lon, lonlat.lat)) {
                 this.currentMapCoordinate = this._formatOutputString(
                     lonlat,
                     mapProjection.proj.units
