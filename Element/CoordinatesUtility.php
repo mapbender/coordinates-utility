@@ -47,7 +47,6 @@ class CoordinatesUtility extends Element
     public static function getDefaultConfiguration()
     {
         return [
-            'type'      => null,
             'target'    => null,
             'srsList'   => '',
             'addMapSrsList' => true,

@@ -38,14 +38,6 @@ class CoordinatesUtilityAdminType extends AbstractType
                 'application'   => $options['application'],
                 'required'      => false
             ])
-            ->add('type', 'Symfony\Component\Form\Extension\Core\Type\ChoiceType', [
-                'required' => true,
-                'choices'  => [
-                    'Element' => 'element',
-                    'Dialog' => 'dialog',
-                ],
-                'choices_as_values' => true,
-            ])
             ->add('srsList', 'Symfony\Component\Form\Extension\Core\Type\TextType', [
                 'required' => false
             ])

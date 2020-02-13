@@ -51,12 +51,10 @@
          * @private
          */
         _setup: function () {
-            var options = this.options;
-
             this.mbMap = $("#" + this.options.target).data("mapbenderMbMap");
             this.highlightLayer = new OpenLayers.Layer.Vector();
 
-            this.isPopUpDialog = options.type === "dialog";
+            this.isPopUpDialog = !this.element.closest('.sidePane,.sideContent').length;
 
             this._initializeMissingSrsDefinitions(this.options.srsList);
             this._setupMapClickHandler();
