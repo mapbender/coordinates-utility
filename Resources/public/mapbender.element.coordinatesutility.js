@@ -234,7 +234,9 @@
 
             $(document).on('mbmapsrschanged', $.proxy(widget._resetFields, widget));
 
-            $('select.srs', widget.element).on('change', $.proxy(widget._transformCoordinateToSelectedSrs, widget));
+            $('select.srs', this.element).on('change', function() {
+                widget._updateFields();
+            });
             $('input.input-coordinate', widget.element).on('change', $.proxy(widget._transformCoordinateToMapSrs, widget));
         },
 
@@ -370,7 +372,6 @@
             this.lon = lonlat.lon;
             this.lat = lonlat.lat;
 
-            this._transformCoordinates();
             this._updateFields();
         },
 
@@ -421,6 +422,7 @@
          * @private
          */
         _updateFields: function () {
+            this._transformCoordinates();
             $('input.map-coordinate', this.element).val(this.currentMapCoordinate);
             $('input.input-coordinate', this.element).val(this.transformedCoordinate);
 
@@ -435,8 +437,8 @@
         _resetFields: function () {
             this.currentMapCoordinate = null;
             this.transformedCoordinate = null;
-
-            this._updateFields();
+            $('input.map-coordinate', this.element).val('');
+            $('input.input-coordinate', this.element).val('');
             this._removeFeature();
         },
 
@@ -519,16 +521,6 @@
             var lonLat = new OpenLayers.LonLat(Point.x, Point.y);
 
             return this.mbMap.map.olMap.isValidLonLat(lonLat);
-        },
-
-        /**
-         * Transform a coordinate to the selected SRS
-         *
-         * @private
-         */
-        _transformCoordinateToSelectedSrs: function () {
-            this._transformCoordinates();
-            this._updateFields();
         },
 
         /**
