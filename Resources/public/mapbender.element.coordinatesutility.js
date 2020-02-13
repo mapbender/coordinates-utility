@@ -234,7 +234,7 @@
             $(document).on('mbmapsrschanged', $.proxy(widget._resetFields, widget));
 
             $('select.srs', this.element).on('change', function() {
-                widget._updateFields();
+                widget._recalculateDisplayCoordinate($(this).val());
             });
             $('input.input-coordinate', widget.element).on('change', $.proxy(widget._transformCoordinateToMapSrs, widget));
         },
@@ -371,6 +371,16 @@
             this.lon = lonlat.lon;
             this.lat = lonlat.lat;
 
+            var selectedSrs = $('select.srs', this.element).val();
+            if (selectedSrs) {
+                if (selectedSrs !== this.mbMap.getModel().getCurrentProjectionCode()) {
+                    var transformed = this._transformCoordinate(this.lon, this.lat, selectedSrs);
+                    this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
+                } else {
+                    this.transformedCoordinate = this.currentMapCoordinate;
+                }
+            }
+
             this._updateFields();
         },
 
@@ -414,12 +424,6 @@
          * @private
          */
         _updateFields: function () {
-            var selectedSrs = $('select.srs', this.element).val();
-            if (selectedSrs && null !== this.lon && null !== this.lat) {
-                var transformed = this._transformCoordinate(this.lon, this.lat, selectedSrs);
-                this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
-            }
-
             $('input.map-coordinate', this.element).val(this.currentMapCoordinate);
             $('input.input-coordinate', this.element).val(this.transformedCoordinate);
 
@@ -437,6 +441,24 @@
             $('input.map-coordinate', this.element).val('');
             $('input.input-coordinate', this.element).val('');
             this._removeFeature();
+        },
+
+        /**
+         * Redisplay last selected coordinate after change of (own) input srs selector.
+         * @param {string} selectedSrs
+         * @private
+         */
+        _recalculateDisplayCoordinate: function(selectedSrs) {
+            if (!selectedSrs) {
+                console.error("No srs");
+                return;
+            }
+            if (null !== this.lon && null !== this.lat) {
+                var transformed = this._transformCoordinate(this.lon, this.lat, selectedSrs);
+                this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
+            }
+
+            this._updateFields();
         },
 
         /**
@@ -530,9 +552,8 @@
             var inputCoordinates = $('input.input-coordinate',this.element).val();
             var inputCoordinatesArray = inputCoordinates.split(/ \s*/);
 
-
-            var lat = inputCoordinatesArray.pop(),
-                lon = inputCoordinatesArray.pop();
+            var lat = parseFloat(inputCoordinatesArray.pop());
+            var lon = parseFloat(inputCoordinatesArray.pop());
 
             var mapProjection = this.mbMap.getModel().getCurrentProjectionCode();
             var transformed = this._transformCoordinate(lon, lat, mapProjection, selectedSrs);
@@ -541,7 +562,11 @@
             this.lat = transformed.y;
 
             if (this._areCoordinatesValid(transformed.x, transformed.y)) {
-                this.currentMapCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
+                if (selectedSrs !== mapProjection) {
+                    this.currentMapCoordinate = this._formatOutputString(transformed.x, transformed.y, mapProjection);
+                } else {
+                    this.currentMapCoordinate = inputCoordinates;
+                }
 
                 this.transformedCoordinate = inputCoordinates;
                 this.clickPoint = new OpenLayers.Geometry.Point(transformed.x, transformed.y);
