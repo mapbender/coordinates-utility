@@ -433,6 +433,8 @@
         _resetFields: function () {
             this.currentMapCoordinate = null;
             this.transformedCoordinate = null;
+            this.lon = null;
+            this.lat = null;
             $('input.map-coordinate', this.element).val('');
             $('input.input-coordinate', this.element).val('');
             this._removeFeature();
