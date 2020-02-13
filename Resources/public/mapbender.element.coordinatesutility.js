@@ -402,7 +402,7 @@
          */
         _formatOutputString: function (x, y, srsCode) {
             var srsCode_ = srsCode || this.mbMap.getModel().getCurrentProjectionCode();
-            var decimals = (this.mbMap.getModel().getProjectionUnitsPerMeter(srsCode_) < 0.25)
+            var decimals = (this.mbMap.getModel().getProjectionUnitsPerMeter(srsCode_) > 0.25)
                 ? this.DECIMAL_METRIC
                 : this.DECIMAL_ANGULAR;
 
