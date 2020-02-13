@@ -376,34 +376,27 @@
         },
 
         /**
-         * Transform coordinates to selected SRS
-         *
+         * @param {number} x
+         * @param {number} y
+         * @param {string} targetSrs
+         * @param {string} [sourceSrs] implicitly current map srs
+         * @return {{x: number, y: number}}
          * @private
          */
-        _transformCoordinates: function () {
-            var selectedSrs = $('select.srs', this.element).val();
-
-            if (null === this.lon || null === this.lat || null === selectedSrs) {
-                return;
-            }
-
-            var currentProjection = this.mbMap.map.olMap.getProjectionObject(),
-                projectionToTransform = new OpenLayers.Projection(selectedSrs);
-
-            var lonlat = new OpenLayers.LonLat(this.lon, this.lat).transform(currentProjection, projectionToTransform);
-
-            this.transformedCoordinate = this._formatOutputString(
-                lonlat.lon, lonlat.lat,
-                selectedSrs
-            );
+        _transformCoordinate: function(x, y, targetSrs, sourceSrs) {
+            var sourceSrs_ = sourceSrs || this.mbMap.getModel().getCurrentProjectionCode();
+            var lonlat = new OpenLayers.LonLat(x, y).transform(sourceSrs_, targetSrs);
+            return {
+                x: lonlat.lon,
+                y: lonlat.lat
+            };
         },
-
         /**
          * Format output coordinate string
          *
          * @param {number} x
          * @param {number} y
-         * @param {string} [srsCode]
+         * @param {string} [srsCode] implicitly current map srs
          * @returns {string}
          * @private
          */
@@ -422,7 +415,12 @@
          * @private
          */
         _updateFields: function () {
-            this._transformCoordinates();
+            var selectedSrs = $('select.srs', this.element).val();
+            if (selectedSrs && null !== this.lon && null !== this.lat) {
+                var transformed = this._transformCoordinate(this.lon, this.lat, selectedSrs);
+                this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
+            }
+
             $('input.map-coordinate', this.element).val(this.currentMapCoordinate);
             $('input.input-coordinate', this.element).val(this.transformedCoordinate);
 
@@ -537,19 +535,17 @@
             var lat = inputCoordinatesArray.pop(),
                 lon = inputCoordinatesArray.pop();
 
-            var mapProjection = this.mbMap.map.olMap.getProjectionObject(),
-                selectedProjection = new OpenLayers.Projection(selectedSrs);
+            var mapProjection = this.mbMap.getModel().getCurrentProjectionCode();
+            var transformed = this._transformCoordinate(lon, lat, mapProjection, selectedSrs);
 
-            var lonlat = new OpenLayers.LonLat(lon, lat).transform(selectedProjection, mapProjection);
+            this.lon = transformed.x;
+            this.lat = transformed.y;
 
-            this.lat = lonlat.lat;
-            this.lon = lonlat.lon;
-
-            if (this._areCoordinatesValid(lonlat.lon, lonlat.lat)) {
-                this.currentMapCoordinate = this._formatOutputString(lonlat.lon, lonlat.lat);
+            if (this._areCoordinatesValid(transformed.x, transformed.y)) {
+                this.currentMapCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
 
                 this.transformedCoordinate = inputCoordinates;
-                this.clickPoint = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+                this.clickPoint = new OpenLayers.Geometry.Point(transformed.x, transformed.y);
 
                 this._updateFields();
             }
