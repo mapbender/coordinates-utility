@@ -373,8 +373,9 @@
 
             var selectedSrs = $('select.srs', this.element).val();
             if (selectedSrs) {
-                if (selectedSrs !== this.mbMap.getModel().getCurrentProjectionCode()) {
-                    var transformed = this._transformCoordinate(this.lon, this.lat, selectedSrs);
+                var mapSrs = this.mbMap.getModel().getCurrentProjectionCode();
+                if (selectedSrs !== mapSrs) {
+                    var transformed = this._transformCoordinate(this.lon, this.lat, selectedSrs, mapSrs);
                     this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
                 } else {
                     this.transformedCoordinate = this.currentMapCoordinate;
@@ -454,8 +455,13 @@
                 return;
             }
             if (null !== this.lon && null !== this.lat) {
-                var transformed = this._transformCoordinate(this.lon, this.lat, selectedSrs);
-                this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
+                var mapSrs = this.mbMap.getModel().getCurrentProjectionCode();
+                if (mapSrs !== selectedSrs) {
+                    var transformed = this._transformCoordinate(this.lon, this.lat, selectedSrs, mapSrs);
+                    this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
+                } else {
+                    this.transformedCoordinate = this._formatOutputString(this.lon, this.lat, selectedSrs);
+                }
             }
 
             this._updateFields();
