@@ -525,15 +525,8 @@
             if (!$.isNumeric(x) || !$.isNumeric(y)) {
                 return false;
             }
-
-            var Point = new Proj4js.Point(x, y),
-                currentProjection = this.mbMap.map.olMap.getProjectionObject();
-
-            Proj4js.transform(currentProjection, currentProjection, Point);
-
-            var lonLat = new OpenLayers.LonLat(Point.x, Point.y);
-
-            return this.mbMap.map.olMap.isValidLonLat(lonLat);
+            var mapExtentArray = this.mbMap.getModel().getMaxExtentArray();
+            return (x >= mapExtentArray[0] && x <= mapExtentArray[2] && y >= mapExtentArray[1] && y <= mapExtentArray[3]);
         },
 
         /**
