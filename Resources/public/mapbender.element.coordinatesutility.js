@@ -16,7 +16,6 @@
 
         mbMap:          null,
         highlightLayer: null,
-        feature:        null,
         mapClickHandler: null,
 
         currentMapCoordinate: null,
@@ -341,9 +340,7 @@
          */
         reveal: function() {
             this.activate();
-            if (this.clickPoint) {
-                this._showFeature();
-            }
+            this._showFeature();
         },
         /**
          * New-style sidepane API: containing pane is hidden
@@ -364,8 +361,6 @@
                 return;
             }
             var lonlat = this.mbMap.map.olMap.getLonLatFromPixel(e.xy);
-            this.clickPoint = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
-
             this.currentMapCoordinate = this._formatOutputString(lonlat.lon, lonlat.lat);
 
             this.lon = lonlat.lon;
@@ -383,6 +378,7 @@
             }
 
             this._updateFields();
+            this._showFeature();
         },
 
         /**
@@ -427,8 +423,6 @@
         _updateFields: function () {
             $('input.map-coordinate', this.element).val(this.currentMapCoordinate);
             $('input.input-coordinate', this.element).val(this.transformedCoordinate);
-
-            this._showFeature();
         },
 
         /**
@@ -473,10 +467,12 @@
          * @private
          */
         _showFeature: function () {
-            this.feature = new OpenLayers.Feature.Vector(this.clickPoint);
-
             this.highlightLayer.removeAllFeatures();
-            this.highlightLayer.addFeatures(this.feature);
+            if (null !== this.lon && null !== this.lat) {
+                var geometry = new OpenLayers.Geometry.Point(this.lon, this.lat);
+                var feature = new OpenLayers.Feature.Vector(geometry);
+                this.highlightLayer.addFeatures(feature);
+            }
         },
 
         /**
@@ -485,9 +481,7 @@
          * @private
          */
         _removeFeature: function () {
-            if (this.feature) {
-                this.highlightLayer.removeFeatures(this.feature);
-            }
+            this.highlightLayer.removeAllFeatures();
         },
 
         /**
@@ -507,13 +501,12 @@
          * @private
          */
         _centerMap: function () {
-            if (null === this.lon || null === this.lat || typeof this.lon === 'undefined' || typeof this.lat === 'undefined') {
+            if (null === this.lon || null === this.lat) {
                 return;
             }
 
             if (this._areCoordinatesValid(this.lon, this.lat)) {
-                this.highlightLayer.removeAllFeatures();
-                this.highlightLayer.addFeatures(this.feature);
+                this._showFeature();
 
                 var lonLat = new OpenLayers.LonLat(this.lon, this.lat);
                 var zoomlevel = this.options.zoomlevel;
@@ -575,9 +568,8 @@
                 }
 
                 this.transformedCoordinate = inputCoordinates;
-                this.clickPoint = new OpenLayers.Geometry.Point(transformed.x, transformed.y);
-
                 this._updateFields();
+                this._showFeature();
             }
         }
     });
