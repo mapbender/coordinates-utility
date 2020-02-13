@@ -2,38 +2,20 @@
 
 namespace Mapbender\CoordinatesUtilityBundle\Tests;
 
+use Mapbender\CoordinatesUtilityBundle\Element\Type\SrsListType;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Form\FormEvents;
-
-use Mapbender\CoordinatesUtilityBundle\Element\EventListener\CoordinatesUtilitySubscriber;
+use Symfony\Component\Form\DataTransformerInterface;
 
 class CoordinatesUtilitySubscriberTest extends WebTestCase
 {
     /**
-     * @var CoordinatesUtilitySubscriber
+     * @var DataTransformerInterface
      */
-    private $coordinatesUtilitySubscriber;
+    private $transformer;
 
     public function setUp()
     {
-        $this->coordinatesUtilitySubscriber = new CoordinatesUtilitySubscriber();
-    }
-
-    /**
-     * Test get subscribed events
-     */
-    public function testGetSubscribedEvents()
-    {
-        $actual = $this
-            ->coordinatesUtilitySubscriber
-            ->getSubscribedEvents();
-
-        $expected = [
-            FormEvents::PRE_SET_DATA => 'preSetData',
-            FormEvents::PRE_SUBMIT   => 'preSubmit',
-        ];
-
-        $this->assertEquals($expected, $actual);
+        $this->transformer = new SrsListType();
     }
 
     /**
@@ -41,8 +23,6 @@ class CoordinatesUtilitySubscriberTest extends WebTestCase
      */
     public function testFormatSrsOutput()
     {
-        $formatSrsOutput = self::getMethod('formatSrsOutput');
-
         $srsListData = [
             [
                 'name'  => 'SRS 1',
@@ -54,11 +34,7 @@ class CoordinatesUtilitySubscriberTest extends WebTestCase
             ]
         ];
         $expected = "SRS 1 | Great title, SRS 2";
-        $actual = $formatSrsOutput
-            ->invokeArgs($this->coordinatesUtilitySubscriber, [
-                $srsListData
-            ]);
-
+        $actual = $this->transformer->transform($srsListData);
         $this->assertEquals($expected, $actual);
     }
 
@@ -67,8 +43,6 @@ class CoordinatesUtilitySubscriberTest extends WebTestCase
      */
     public function testRetrieveUniqueSRSNamesAndTitles()
     {
-        $retrieveUniqueSRSNamesAndTitles = self::getMethod('retrieveUniqueSRSNamesAndTitles');
-
         $srsListData = "SRS 1 | Great title, SRS 2";
         $expected = [
             [
@@ -80,28 +54,8 @@ class CoordinatesUtilitySubscriberTest extends WebTestCase
                 'title' => '',
             ]
         ];
-        $actual = $retrieveUniqueSRSNamesAndTitles
-            ->invokeArgs($this->coordinatesUtilitySubscriber, [
-                $srsListData
-            ]);
-
+        $actual = $this->transformer->reverseTransform($srsListData);
         $this->assertEquals($expected, $actual);
-    }
-
-    /**
-     * Get reflection of private method
-     *
-     * @param $name
-     * @return \ReflectionMethod
-     */
-    protected static function getMethod($name)
-    {
-        $class = new \ReflectionClass(CoordinatesUtilitySubscriber::class);
-
-        $method = $class->getMethod($name);
-        $method->setAccessible(true);
-
-        return $method;
     }
 }
 
