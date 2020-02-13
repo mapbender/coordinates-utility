@@ -9,14 +9,6 @@ use Mapbender\CoordinatesUtilityBundle\Element\EventListener\CoordinatesUtilityS
 
 class CoordinatesUtilityAdminType extends AbstractType
 {
-    /**
-     * @inheritdoc
-     */
-    public function getName()
-    {
-        return 'CoordinatesUtility';
-    }
-
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
