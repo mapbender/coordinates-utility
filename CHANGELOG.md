@@ -1,3 +1,6 @@
+## 1.0.9
+* Update for current Mapbender API conventions (no functional changes)
+
 ## 1.0.8
 * Fix coordinate display rounding drift on map click
 * Fix coordinate display rounding drift on coordinate input changes
