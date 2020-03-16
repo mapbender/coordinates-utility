@@ -112,20 +112,15 @@
                     } else {
                         widget.activate();
                     }
-
-                    $(this).toggleClass('active');
                 });
 
                 coordinateSearchButton.removeClass('hidden');
             }
-
-            return this;
         },
 
         /**
          * Create SRS dropdown
          *
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _setupSrsDropdown: function () {
@@ -137,15 +132,12 @@
             }
 
             initDropdown.call($('.dropdown', widget.element));
-
-            return this;
         },
 
         /**
          * Create options for the dropdown
          *
          * @param {DOM} dropdown
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _createDropdownOptions: function (dropdown) {
@@ -158,7 +150,7 @@
 
             if (srsArray.length === 0) {
                 Mapbender.error(Mapbender.trans("mb.coordinatesutility.widget.error.noSrs"));
-                return this;
+                return;
             }
 
             srsArray.map(function (srs) {
@@ -172,8 +164,6 @@
             });
 
             widget._setDefaultSelectedValue(dropdown);
-
-            return this;
         },
 
         /**
@@ -200,7 +190,6 @@
          * Add SRSs from the map
          *
          * @param array srsArray
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _addMapSrsOptionsToDropodw: function (srsArray) {
@@ -219,14 +208,12 @@
                 }
             });
 
-            return this;
         },
 
         /**
          * Set selected by default value in dropdown
          *
          * @param {DOM} dropdown
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _setDefaultSelectedValue: function (dropdown) {
@@ -237,7 +224,6 @@
         /**
          * Setup event listeners
          *
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _setupEventListeners: function () {
@@ -303,7 +289,13 @@
          * On close
          */
         close: function () {
-            this.popupWindow.$element.addClass('hidden');
+            if (this.popupWindow && this.popupWindow.$element) {
+                this.popupWindow.$element.addClass('hidden');
+            }
+            if (this.callback) {
+                this.callback.call();
+                this.callback = null;
+            }
 
             this.deactivate();
             this._resetFields();
@@ -413,7 +405,7 @@
          * @private
          */
         _formatOutputString: function (x, y, srsCode) {
-            var decimals = (this.mbMap.getModel().getProjectionUnitsPerMeter(srsCode) > 0.25)
+            var decimals = (Mapbender.mapEngine.getProjectionUnitsPerMeter(srsCode) > 0.25)
                 ? this.DECIMAL_METRIC
                 : this.DECIMAL_ANGULAR;
 
@@ -477,8 +469,8 @@
          * @private
          */
         _showFeature: function () {
-                var coordinatesArray = [this.coordinatesObject.x, this.coordinatesObject.y];
-                this.vectorLayerId = this.model.setMarkerOnCoordinates(coordinatesArray, this.element.attr('id'), this.vectorLayerId);
+                var coordinatesArray = [this.lon, this.lat];
+                this.vectorLayerId = this.mbMap.getModel().setMarkerOnCoordinates(coordinatesArray, this.element.attr('id'), this.vectorLayerId);
 
                 return this;
         },
@@ -511,7 +503,6 @@
         /**
          * Center the map accordingly to a selected coordinate
          *
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _centerMap: function () {
@@ -525,15 +516,12 @@
             } else {
                 Mapbender.error(Mapbender.trans("mb.coordinatesutility.widget.error.invalidCoordinates"));
             }
-
-            return this;
         },
 
         /**
          * Check if coordinates to navigate are valid
          *
          * @returns boolean
-         * @param {{x},{y}} coordinates
          * @private
          */
         _areCoordinatesValid: function (x, y) {
@@ -547,13 +535,12 @@
         /**
          * Transform coordinates from selected SRS to a map SRS
          *
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _transformCoordinateToMapSrs: function () {
-            var selectedSrs = $('select.srs', this.element).val(),
-                inputCoordinates = $('input.input-coordinate').val(),
-                inputCoordinatesArray = inputCoordinates.split(/ \s*/);
+            var selectedSrs = $('select.srs', this.element).val();
+            var inputCoordinates = $('input.input-coordinate', this.element).val();
+            var inputCoordinatesArray = inputCoordinates.split(/ \s*/);
 
             var lat = parseFloat(inputCoordinatesArray.pop());
             var lon = parseFloat(inputCoordinatesArray.pop());
