@@ -36,7 +36,7 @@ class CoordinatesUtility extends Element
                 '@MapbenderCoordinatesUtilityBundle/Resources/public/sass/element/coordinatesutility.scss'
             ],
             'trans' => [
-                'MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.json.twig'
+                'mb.coordinatesutility.widget.*',
             ]
         ];
     }
@@ -47,7 +47,6 @@ class CoordinatesUtility extends Element
     public static function getDefaultConfiguration()
     {
         return [
-            'type'      => null,
             'target'    => null,
             'srsList'   => '',
             'addMapSrsList' => true,

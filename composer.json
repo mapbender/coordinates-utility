@@ -10,6 +10,9 @@
     "require": {
         "php": ">=5.5.4"
     },
+    "conflict": {
+        "mapbender/mapbender": "<3.0.8.5"
+    },
     "autoload": {
         "psr-4": {"Mapbender\\CoordinatesUtilityBundle\\": "."}
     },

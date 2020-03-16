@@ -1,25 +1,13 @@
 <div class="defaultForm elementForm ui-widget" id="search-coordinate">
-    {{ form_label(form.title) }}{{ form_widget(form.title) }}
-
-    <div class="clearContainer"></div>
-
-    {{ form_label(form.configuration.target) }}{{ form_widget(form.configuration.target) }}
-
-    <div class="clearContainer"></div>
-
-    {{ form_label(form.configuration.type) }}{{ form_widget(form.configuration.type) }}
-
-    <div class="clearContainer"></div>
-
-    {{ form_label(form.configuration.srsList) }}{{ form_widget(form.configuration.srsList, { 'attr': {'class': 'srs-autocomplete', 'data-autocomplete-url': path('srs_autocomplete')}}) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.configuration.target) }}
+    {{ form_row(form.configuration.srsList, {'attr': {'class': 'srs-autocomplete', 'data-autocomplete-url': path('srs_autocomplete')}}) }}
     <div id="srs-autocomplete-variants"></div>
 
-    <div class="clearContainer"></div>
+    {{ form_row(form.configuration.zoomlevel) }}
 
-    {{ form_label(form.configuration.zoomlevel) }}{{ form_widget(form.configuration.zoomlevel) }}
-    <div class="clearContainer"></div>
-
-    <div class="left">
+    <div>
+        {# amenity for legacy form theme #}
     {{ form_widget(form.configuration.addMapSrsList) }}{{ form_label(form.configuration.addMapSrsList) }}
     </div>
 

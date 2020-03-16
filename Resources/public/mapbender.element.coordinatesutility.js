@@ -8,6 +8,7 @@
         options: {
             target:    null
         },
+        mapClickActive: false,
 
         isPopupDialog: false,
         callback:       null,
@@ -16,16 +17,7 @@
          * @var {mapbender.mbMap}
          */
         mbMap:          null,
-
-        /**
-         * @var {Mapbender.Model}
-         */
-        model:          null,
-
-        /**
-         * @var null | {string} mapClickHandler id
-         */
-        mapClickHandler: null,
+        highlightLayer: null,
 
         /**
          * @var null | {string}
@@ -36,16 +28,12 @@
          * @var null | {string}
          */
         transformedCoordinate: null,
-
-        /**
-         * @var undefined | {{x}, {y}}
-         */
-        coordinatesObject: undefined,
+        lon: null,
+        lat: null,
 
         DECIMAL_ANGULAR: 6,
         DECIMAL_METRIC: 2,
         STRING_SEPARATOR: ' ',
-        ZOOM: 10,
 
         /**
          * Widget constructor
@@ -69,30 +57,29 @@
          * @private
          */
         _setup: function () {
-            var options = this.options;
+            this.mbMap = $("#" + this.options.target).data("mapbenderMbMap");
+            this.highlightLayer = new OpenLayers.Layer.Vector();
 
-            this.mbMap = Mapbender.elementRegistry.listWidgets().mapbenderMbMap;
-            this.model = this.mbMap.model;
-            this.isPopUpDialog = options.type === "dialog";
+            this.isPopUpDialog = !this.element.closest('.sidePane,.sideContent').length;
 
-            this._initializeMissingSrsDefinitions(this.options.srsList)
-                ._setupMapClickHandler()
-                ._setupButtons()
-                ._setupSrsDropdown()
-                ._setupEventListeners();
+            this._initializeMissingSrsDefinitions(this.options.srsList);
+            this._setupButtons();
+            this._setupSrsDropdown();
+            this._setupEventListeners();
+
+            this._trigger('ready');
         },
 
         /**
          * Initialize srs definitions which are not set before and missing in Proj4js.defs array
          *
          * @param srsList
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _initializeMissingSrsDefinitions: function (srsList) {
 
             if (null === srsList || typeof srsList.length === "undefined") {
-                return this;
+                return;
             }
 
             srsList.map(function (srs) {
@@ -100,8 +87,6 @@
                     proj4.defs(srs.name, srs.definition);
                 }
             });
-
-            return this;
         },
 
         /**
@@ -132,22 +117,6 @@
                 });
 
                 coordinateSearchButton.removeClass('hidden');
-            }
-
-            return this;
-        },
-
-        /**
-         * Setup map click handler
-         *
-         * @returns {mapbender.mbCoordinatesUtility}
-         * @private
-         */
-        _setupMapClickHandler: function () {
-            var widget = this;
-
-            if (!widget.mapClickHandler) {
-                widget.mapClickHandler = this.model.setOnSingleClickHandler( $.proxy(this._mapClick, this));
             }
 
             return this;
@@ -261,11 +230,8 @@
          * @private
          */
         _setDefaultSelectedValue: function (dropdown) {
-            var currentSrs = this.model.getCurrentProjectionCode();
-
+            var currentSrs = this.mbMap.getModel().getCurrentProjectionCode();
             dropdown.val(currentSrs);
-
-            return this;
         },
 
         /**
@@ -278,12 +244,14 @@
             var widget = this;
 
             $(document).on('mbmapsrschanged', $.proxy(widget._resetFields, widget));
-            $(document).on('mbmapsrsadded', $.proxy(widget._resetFields, widget));
 
-            $('select.srs', widget.element).on('change', $.proxy(widget._transformCoordinateToSelectedSrs, widget));
+            $('select.srs', this.element).on('change', function() {
+                widget._recalculateDisplayCoordinate($(this).val());
+            });
             $('input.input-coordinate', widget.element).on('change', $.proxy(widget._transformCoordinateToMapSrs, widget));
-
-            return this;
+            this.mbMap.element.on('mbmapclick', function(event, data) {
+                widget._mapClick(event, data);
+            });
         },
 
         /**
@@ -322,15 +290,6 @@
         },
 
         /**
-         * Provide default action
-         *
-         * @returns {action}
-         */
-        defaultAction: function () {
-            return this.open();
-        },
-
-        /**
          * On open handler
          */
         open: function (callback) {
@@ -354,84 +313,111 @@
          * Activate coordinate search
          */
         activate: function () {
-            this._setupMapClickHandler();
-
-            this.model.setMapCursorStyle('crosshair');
+            this.mbMap.map.element.addClass('crosshair');
+            this.mbMap.map.olMap.addLayer(this.highlightLayer);
+            $('.coordinate-search', this.element).addClass('active');
+            this.mapClickActive = true;
         },
 
         /**
          * Deactivate coordinate search
          */
         deactivate: function () {
-            this.model.removeEventListenerByKey(this.mapClickHandler);
-            this.mapClickHandler = null;
-
-            this.model.setMapCursorStyle('');
+            this.mbMap.map.element.removeClass('crosshair');
+            this.mbMap.map.olMap.removeLayer(this.highlightLayer);
+            $('.coordinate-search', this.element).removeClass('active');
+            this.mapClickActive = false;
+        },
+        /**
+         * New-style sidepane API: containing pane is visible
+         */
+        reveal: function() {
+            this.activate();
+            this._showFeature();
+        },
+        /**
+         * New-style sidepane API: containing pane is hidden
+         */
+        hide: function() {
+            this.deactivate();
+            this._removeFeature();
         },
 
         /**
          * On map click handler
          *
-         * @param event selected pixel
+         * @param {Event} event
+         * @param {*} data
          * @private
          */
-        _mapClick: function (event) {
-            this.coordinatesObject = this.model.getCoordinatesXYObjectFromMapClickEvent(event);
-            this.currentMapCoordinate = this._formatOutputString(this.coordinatesObject, this.model.getUnitsOfCurrentProjection());
+        _mapClick: function (event, data) {
+            if (!this.mapClickActive) {
+                return;
+            }
+            var x = this.lon = data.coordinate[0];
+            var y = this.lat = data.coordinate[1];
+            var mapSrs = this.mbMap.getModel().getCurrentProjectionCode();
+            this.currentMapCoordinate = this._formatOutputString(x, y, mapSrs);
 
-            this._transformCoordinates()
-                ._updateFields()
-                ._removePreviousFeature()
-                ._drawNewFeature();
+            var selectedSrs = $('select.srs', this.element).val();
+            if (selectedSrs) {
+                if (selectedSrs !== mapSrs) {
+                    var transformed = this._transformCoordinate(x, y, selectedSrs, mapSrs);
+                    this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
+                } else {
+                    this.transformedCoordinate = this.currentMapCoordinate;
+                }
+            }
+
+            this._updateFields();
+            this._showFeature();
         },
 
         /**
-         * Transform coordinates to selected SRS
-         *
-         * @returns {mapbender.mbCoordinatesUtility}
+         * @param {number} x
+         * @param {number} y
+         * @param {string} targetSrs
+         * @param {string} [sourceSrs] implicitly current map srs
+         * @return {{x: number, y: number}}
          * @private
          */
-        _transformCoordinates: function () {
-            var selectedSrs = $('select.srs', this.element).val();
-
-            if (typeof this.coordinatesObject === 'undefined' || null === selectedSrs) {
-                return this;
+        _transformCoordinate: function(x, y, targetSrs, sourceSrs) {
+            var sourceSrs_ = sourceSrs || this.mbMap.getModel().getCurrentProjectionCode();
+            if (window.proj4) {
+                var
+                    fromProj = proj4.Proj(sourceSrs_),
+                    toProj = proj4.Proj(targetSrs),
+                    transformedCoordinates = proj4.transform(fromProj, toProj, [x, y])
+                ;
+                return {
+                    x: transformedCoordinates[0],
+                    y: transformedCoordinates[1]
+                };
+            } else if (window.OpenLayers && window.OpenLayers.LonLat) {
+                var lonlat = new OpenLayers.LonLat(x, y).transform(sourceSrs_, targetSrs);
+                return {
+                    x: lonlat.lon,
+                    y: lonlat.lat
+                };
+            } else {
+                throw new Error("Cannot transform");
             }
-
-            var currentProjection = proj4.Proj(this.model.getCurrentProjectionCode()),
-                projectionToTransform = proj4.Proj(selectedSrs),
-                coordinatesToTransform = $.extend(this.coordinatesObject);
-
-            var transformedCoordinatesObject = proj4.transform(currentProjection, projectionToTransform, coordinatesToTransform);
-
-            this.transformedCoordinate = this._formatOutputString(
-                transformedCoordinatesObject,
-                projectionToTransform.units
-            );
-
-            return this;
         },
-
         /**
          * Format output coordinate string
          *
-         * @param {x,y} coordinates
-         * @param {string} unit
+         * @param {number} x
+         * @param {number} y
+         * @param {string} srsCode
          * @returns {string}
          * @private
          */
-        _formatOutputString: function (coordinates, unit) {
-            var formattedOutputString = '';
+        _formatOutputString: function (x, y, srsCode) {
+            var decimals = (this.mbMap.getModel().getProjectionUnitsPerMeter(srsCode) > 0.25)
+                ? this.DECIMAL_METRIC
+                : this.DECIMAL_ANGULAR;
 
-            if (typeof coordinates !== 'undefined') {
-                var decimal = (unit  === 'm')
-                    ? this.DECIMAL_METRIC
-                    : this.DECIMAL_ANGULAR;
-
-                formattedOutputString = coordinates.x.toFixed(decimal) + this.STRING_SEPARATOR + coordinates.y.toFixed(decimal);
-            }
-
-            return formattedOutputString;
+            return x.toFixed(decimals) + this.STRING_SEPARATOR + y.toFixed(decimals);
         },
 
         /**
@@ -443,8 +429,6 @@
         _updateFields: function () {
             $('input.map-coordinate', this.element).val(this.currentMapCoordinate);
             $('input.input-coordinate', this.element).val(this.transformedCoordinate);
-
-            return this;
         },
 
         /**
@@ -456,11 +440,34 @@
         _resetFields: function () {
             this.currentMapCoordinate = null;
             this.transformedCoordinate = null;
+            this.lon = null;
+            this.lat = null;
+            $('input.map-coordinate', this.element).val('');
+            $('input.input-coordinate', this.element).val('');
+            this._removeFeature();
+        },
+
+        /**
+         * Redisplay last selected coordinate after change of (own) input srs selector.
+         * @param {string} selectedSrs
+         * @private
+         */
+        _recalculateDisplayCoordinate: function(selectedSrs) {
+            if (!selectedSrs) {
+                console.error("No srs");
+                return;
+            }
+            if (null !== this.lon && null !== this.lat) {
+                var mapSrs = this.mbMap.getModel().getCurrentProjectionCode();
+                if (mapSrs !== selectedSrs) {
+                    var transformed = this._transformCoordinate(this.lon, this.lat, selectedSrs, mapSrs);
+                    this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
+                } else {
+                    this.transformedCoordinate = this._formatOutputString(this.lon, this.lat, selectedSrs);
+                }
+            }
 
             this._updateFields();
-            this._removePreviousFeature();
-
-            return this;
         },
 
         /**
@@ -469,11 +476,11 @@
          * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
-        _drawNewFeature: function () {
-            var coordinatesArray = [this.coordinatesObject.x, this.coordinatesObject.y];
-            this.vectorLayerId = this.model.setMarkerOnCoordinates(coordinatesArray, this.element.attr('id'), this.vectorLayerId);
+        _showFeature: function () {
+                var coordinatesArray = [this.coordinatesObject.x, this.coordinatesObject.y];
+                this.vectorLayerId = this.model.setMarkerOnCoordinates(coordinatesArray, this.element.attr('id'), this.vectorLayerId);
 
-            return this;
+                return this;
         },
 
         /**
@@ -482,12 +489,12 @@
          * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
-        _removePreviousFeature: function () {
-            if (typeof this.vectorLayerId !== 'undefined') {
-                this.model.removeAllFeaturesFromLayer(this.element.attr('id'), this.vectorLayerId);
-            }
+        _removeFeature: function () {
+                if (typeof this.vectorLayerId !== 'undefined') {
+                    this.model.removeAllFeaturesFromLayer(this.element.attr('id'), this.vectorLayerId);
+                }
 
-            return this;
+                return this;
         },
 
         /**
@@ -508,13 +515,13 @@
          * @private
          */
         _centerMap: function () {
-            if (typeof this.coordinatesObject.x === 'undefined' || typeof this.coordinatesObject.x === 'undefined') {
-                return this;
+            if (null === this.lon || null === this.lat) {
+                return;
             }
 
-            if (this._areCoordinatesValid(this.coordinatesObject)) {
-                this.model.setCenter([this.coordinatesObject.x, this.coordinatesObject.y])
-                    .setZoom(this.ZOOM);
+            if (this._areCoordinatesValid(this.lon, this.lat)) {
+                this._showFeature();
+                this.mbMap.getModel().centerXy(this.lon, this.lat, {zoom: this.options.zoomlevel});
             } else {
                 Mapbender.error(Mapbender.trans("mb.coordinatesutility.widget.error.invalidCoordinates"));
             }
@@ -529,36 +536,12 @@
          * @param {{x},{y}} coordinates
          * @private
          */
-        _areCoordinatesValid: function (coordinates) {
-            if (typeof coordinates === 'undefined'
-                || !$.isNumeric(coordinates.x)
-                || !$.isNumeric(coordinates.y)
-            ) {
+        _areCoordinatesValid: function (x, y) {
+            if (!$.isNumeric(x) || !$.isNumeric(y)) {
                 return false;
             }
-
-            var areValid = false,
-                currentProjection = proj4.Proj(this.model.getCurrentProjectionCode()),
-                theSameCoordinates = proj4.transform(currentProjection, currentProjection, coordinates);
-
-            if (theSameCoordinates === coordinates) {
-                areValid = true;
-            }
-
-            return areValid;
-        },
-
-        /**
-         * Transform a coordinate to the selected SRS
-         *
-         * @returns {mapbender.mbCoordinatesUtility}
-         * @private
-         */
-        _transformCoordinateToSelectedSrs: function () {
-            this._transformCoordinates();
-            this._updateFields();
-
-            return this;
+            var mapExtentArray = this.mbMap.getModel().getMaxExtentArray();
+            return (x >= mapExtentArray[0] && x <= mapExtentArray[2] && y >= mapExtentArray[1] && y <= mapExtentArray[3]);
         },
 
         /**
@@ -572,34 +555,26 @@
                 inputCoordinates = $('input.input-coordinate').val(),
                 inputCoordinatesArray = inputCoordinates.split(/ \s*/);
 
-            var currentProjection = proj4.Proj(this.model.getCurrentProjectionCode()),
-                projectionToTransform = proj4.Proj(selectedSrs);
+            var lat = parseFloat(inputCoordinatesArray.pop());
+            var lon = parseFloat(inputCoordinatesArray.pop());
 
-            var transformedCoordinates = proj4.transform(currentProjection, projectionToTransform, inputCoordinatesArray);
+            var mapProjection = this.mbMap.getModel().getCurrentProjectionCode();
+            var transformed = this._transformCoordinate(lon, lat, mapProjection, selectedSrs);
 
-            if (this._areCoordinatesValid(transformedCoordinates)) {
-                this.currentMapCoordinate = this._formatOutputString(
-                    transformedCoordinates,
-                    currentProjection.units
-                );
+            this.lon = transformed.x;
+            this.lat = transformed.y;
+
+            if (this._areCoordinatesValid(transformed.x, transformed.y)) {
+                if (selectedSrs !== mapProjection) {
+                    this.currentMapCoordinate = this._formatOutputString(transformed.x, transformed.y, mapProjection);
+                } else {
+                    this.currentMapCoordinate = inputCoordinates;
+                }
 
                 this.transformedCoordinate = inputCoordinates;
-
                 this._updateFields();
+                this._showFeature();
             }
-
-            return this;
-        },
-
-        /**
-         * On map SRS added handler
-         *
-         * @param event
-         * @param srsObj
-         * @private
-         */
-        _onMapSrsAdded: function (event, srsObj) {
-            $('.srs', this.element).append($('<option></option>').val(srsObj.name).html(srsObj.title));
         }
     });
 
