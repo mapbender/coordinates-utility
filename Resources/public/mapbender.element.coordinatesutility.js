@@ -1,5 +1,5 @@
 /*jslint browser: true, nomen: true*/
-/*globals initDropdown, Mapbender, OpenLayers, Proj4js, _, jQuery*/
+/*globals initDropdown, Mapbender, OpenLayers, proj4, Proj4js, _, jQuery*/
 
 (function ($) {
     'use strict';
@@ -83,8 +83,11 @@
             }
 
             srsList.map(function (srs) {
-                if (typeof proj4.defs(srs.name) === "undefined") {
+                if (window.proj4 && (typeof proj4.defs[srs.name] === "undefined")) {
                     proj4.defs(srs.name, srs.definition);
+                }
+                if (window.Proj4js && (typeof Proj4js.defs[srs.name] === "undefined")) {
+                    Proj4js.defs[srs.name] = srs.definition;
                 }
             });
         },
@@ -174,16 +177,13 @@
          * @private
          */
         _isValidSRS: function (srs) {
-            var isValid = true;
-
-            try {
-                proj4.Proj(srs);
-            } catch (error) {
-                console.error("Projection " + srs + " is not valid", error);
-                isValid = false;
+            if (window.proj4) {
+                return typeof proj4.defs[srs] !== "undefined";
+            } else if (window.Proj4js) {
+                return typeof Proj4js.defs[srs] !== "undefined";
+            } else {
+                throw new Error("Missing proj4js library");
             }
-
-            return isValid;
         },
 
         /**
