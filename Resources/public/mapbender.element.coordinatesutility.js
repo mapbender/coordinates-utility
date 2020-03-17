@@ -134,7 +134,7 @@
                     return;
                 }
                 dropdown.append(srsList.map(function(srs) {
-                    return $('<option>').val(srs.name).html(srs.title || srs.name);
+                    return $('<option>').val(srs.name).text(srs.title || srs.name);
                 }));
             }
 
