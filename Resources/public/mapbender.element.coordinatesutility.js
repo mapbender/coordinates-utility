@@ -128,45 +128,44 @@
          */
         _setupSrsDropdown: function () {
             var widget = this,
-                dropdown = $('.srs', widget.element);
+                dropdown = $('select.srs', widget.element);
 
             if (dropdown.children().length === 0) {
-                widget._createDropdownOptions(dropdown);
+                var srsList = this._getDropdownSrsList();
+                if (!srsList.length) {
+                    Mapbender.error(Mapbender.trans("mb.coordinatesutility.widget.error.noSrs"));
+                    return;
+                }
+                dropdown.append(srsList.map(function(srs) {
+                    return $('<option>').val(srs.name).text(srs.title || srs.name);
+                }));
             }
-
-            initDropdown.call($('.dropdown', widget.element));
+            var $wrapper = dropdown.parent('.dropdown');
+            if ($wrapper.length && initDropdown) {
+                initDropdown.call($('.dropdown', this.element));
+            }
+            this._setDefaultSelectedValue(dropdown);
         },
 
         /**
-         * Create options for the dropdown
+         * Get SRS descriptor objects for the dropdown
          *
-         * @param {DOM} dropdown
          * @private
          */
-        _createDropdownOptions: function (dropdown) {
-            var widget = this,
-                srsArray = (null === widget.options.srsList) ? [] : widget.options.srsList;
-
-            if (widget.options.addMapSrsList) {
-                widget._addMapSrsOptionsToDropodw(srsArray);
+        _getDropdownSrsList: function () {
+            var srsList = (this.options.srsList || []).slice();
+            if (this.options.addMapSrsList) {
+                var mapSrs = this.mbMap.getAllSrs();
+                var srsNames = srsList.map(function (srs) {
+                    return srs.name;
+                });
+                mapSrs.forEach(function(srs) {
+                    if (srsNames.indexOf(srs.name) === -1) {
+                        srsList.push(srs);
+                    }
+                });
             }
-
-            if (srsArray.length === 0) {
-                Mapbender.error(Mapbender.trans("mb.coordinatesutility.widget.error.noSrs"));
-                return;
-            }
-
-            srsArray.map(function (srs) {
-                if (widget._isValidSRS(srs.name)) {
-                    var title = (srs.title.length === 0)
-                        ? srs.name
-                        : srs.title;
-
-                    dropdown.append($('<option></option>').val(srs.name).html(title));
-                }
-            });
-
-            widget._setDefaultSelectedValue(dropdown);
+            return srsList;
         },
 
         /**
@@ -187,32 +186,9 @@
         },
 
         /**
-         * Add SRSs from the map
-         *
-         * @param array srsArray
-         * @private
-         */
-        _addMapSrsOptionsToDropodw: function (srsArray) {
-            var mapSrs = this.mbMap.getAllSrs();
-
-            var srsNames = srsArray.map(function (srs) {
-                return srs.name;
-            });
-
-            mapSrs.map(function (srs) {
-
-                var srsAlreadyExists = $.inArray(srs.name, srsNames) >= 0;
-
-                if (srsAlreadyExists === false) {
-                    srsArray.push(srs);
-                }
-            });
-        },
-
-        /**
          * Set selected by default value in dropdown
          *
-         * @param {DOM} dropdown
+         * @param {jQuery} dropdown
          * @private
          */
         _setDefaultSelectedValue: function (dropdown) {
@@ -241,9 +217,6 @@
 
         /**
          * Popup HTML window
-         *
-         * @param html
-         * @return {mapbender.mbLegend.popup}
          */
         popup: function () {
             var widget = this,
