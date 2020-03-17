@@ -4,13 +4,14 @@
 (function ($) {
     'use strict';
 
-    $.widget("mapbender.mbCoordinatesUtility", $.mapbender.mbBaseElement, {
+    $.widget("mapbender.mbCoordinatesUtility", {
         options: {
             target:    null
         },
         mapClickActive: false,
 
         isPopupDialog: false,
+
         callback:       null,
 
         /**
@@ -95,7 +96,6 @@
         /**
          * Setup widget buttons
          *
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _setupButtons: function () {
@@ -105,7 +105,7 @@
             $('.center-map', widget.element).on('click',  $.proxy(widget._centerMap, widget));
 
             if (!widget.isPopUpDialog) {
-                var coordinateSearchButton = $('.coordinate-search');
+                var coordinateSearchButton = $('.coordinate-search', this.element);
 
                 coordinateSearchButton.on('click', function () {
                     var isActive = $(this).hasClass('active');
@@ -207,7 +207,6 @@
                     srsArray.push(srs);
                 }
             });
-
         },
 
         /**
@@ -415,7 +414,6 @@
         /**
          * Update coordinate input fields
          *
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _updateFields: function () {
@@ -426,7 +424,6 @@
         /**
          * Reset coordinate input fields
          *
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _resetFields: function () {
