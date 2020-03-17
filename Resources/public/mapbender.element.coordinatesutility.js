@@ -58,7 +58,7 @@
          */
         _setup: function () {
             this.mbMap = $("#" + this.options.target).data("mapbenderMbMap");
-            this.highlightLayer = new OpenLayers.Layer.Vector();
+            this.highlightLayer = window.Mapbender.vectorLayerPool.getElementLayer(this, 0);
 
             this.isPopUpDialog = !this.element.closest('.sidePane,.sideContent').length;
 
@@ -306,7 +306,7 @@
          */
         activate: function () {
             this.mbMap.map.element.addClass('crosshair');
-            this.mbMap.map.olMap.addLayer(this.highlightLayer);
+            Mapbender.vectorLayerPool.showElementLayers(this);
             $('.coordinate-search', this.element).addClass('active');
             this.mapClickActive = true;
         },
@@ -316,7 +316,7 @@
          */
         deactivate: function () {
             this.mbMap.map.element.removeClass('crosshair');
-            this.mbMap.map.olMap.removeLayer(this.highlightLayer);
+            Mapbender.vectorLayerPool.hideElementLayers(this);
             $('.coordinate-search', this.element).removeClass('active');
             this.mapClickActive = false;
         },
@@ -469,24 +469,20 @@
          * @private
          */
         _showFeature: function () {
-                var coordinatesArray = [this.lon, this.lat];
-                this.vectorLayerId = this.mbMap.getModel().setMarkerOnCoordinates(coordinatesArray, this.element.attr('id'), this.vectorLayerId);
+            var feature = new ol.Feature({
+                geometry: new ol.geom.Point([this.lon, this.lat])
+            });
 
-                return this;
+            this.highlightLayer.getNativeLayer().getSource().addFeature(feature);
         },
 
         /**
          * Remove feature from the map
          *
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _removeFeature: function () {
-                if (typeof this.vectorLayerId !== 'undefined') {
-                    this.model.removeAllFeaturesFromLayer(this.element.attr('id'), this.vectorLayerId);
-                }
-
-                return this;
+            this.highlightLayer.clear();
         },
 
         /**
