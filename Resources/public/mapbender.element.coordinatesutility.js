@@ -137,8 +137,10 @@
                     return $('<option>').val(srs.name).text(srs.title || srs.name);
                 }));
             }
-
-            initDropdown.call($('.dropdown', this.element));
+            var $wrapper = dropdown.parent('.dropdown');
+            if ($wrapper.length && initDropdown) {
+                initDropdown.call($('.dropdown', this.element));
+            }
             this._setDefaultSelectedValue(dropdown);
         },
 
