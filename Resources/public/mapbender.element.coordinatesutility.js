@@ -439,6 +439,7 @@
          * @private
          */
         _showFeature: function () {
+            this.highlightLayer.clear();
             var feature = new ol.Feature({
                 geometry: new ol.geom.Point([this.lon, this.lat])
             });
