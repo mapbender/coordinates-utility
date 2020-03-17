@@ -14,10 +14,20 @@
 
         callback:       null,
 
+        /**
+         * @var {mapbender.mbMap}
+         */
         mbMap:          null,
         highlightLayer: null,
 
+        /**
+         * @var null | {string}
+         */
         currentMapCoordinate: null,
+
+        /**
+         * @var null | {string}
+         */
         transformedCoordinate: null,
         lon: null,
         lat: null,
@@ -110,6 +120,8 @@
 
         /**
          * Create SRS dropdown
+         *
+         * @private
          */
         _setupSrsDropdown: function () {
             var widget = this,
@@ -504,7 +516,7 @@
          */
         _transformCoordinateToMapSrs: function () {
             var selectedSrs = $('select.srs', this.element).val();
-            var inputCoordinates = $('input.input-coordinate',this.element).val();
+            var inputCoordinates = $('input.input-coordinate', this.element).val();
             var inputCoordinatesArray = inputCoordinates.split(/ \s*/);
 
             var lat = parseFloat(inputCoordinatesArray.pop());
