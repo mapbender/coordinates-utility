@@ -440,11 +440,7 @@
          */
         _showFeature: function () {
             this.highlightLayer.clear();
-            var feature = new ol.Feature({
-                geometry: new ol.geom.Point([this.lon, this.lat])
-            });
-
-            this.highlightLayer.getNativeLayer().getSource().addFeature(feature);
+            this.highlightLayer.addMarker(this.lon, this.lat);
         },
 
         /**
