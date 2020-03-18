@@ -1,5 +1,5 @@
 /*jslint browser: true, nomen: true*/
-/*globals initDropdown, Mapbender, OpenLayers, Proj4js, _, jQuery*/
+/*globals initDropdown, Mapbender, OpenLayers, proj4, Proj4js, _, jQuery*/
 
 (function ($) {
     'use strict';
@@ -84,7 +84,10 @@
             }
 
             srsList.map(function (srs) {
-                if (typeof Proj4js.defs[srs.name] === "undefined") {
+                if (window.proj4 && (typeof proj4.defs[srs.name] === "undefined")) {
+                    proj4.defs(srs.name, srs.definition);
+                }
+                if (window.Proj4js && (typeof Proj4js.defs[srs.name] === "undefined")) {
                     Proj4js.defs[srs.name] = srs.definition;
                 }
             });
@@ -173,14 +176,13 @@
          * @private
          */
         _isValidSRS: function (srs) {
-            var projection = new OpenLayers.Projection(srs),
-                isValid = true;
-
-            if (typeof projection.proj.defData === 'undefined') {
-                isValid = false;
+            if (window.proj4) {
+                return typeof proj4.defs[srs] !== "undefined";
+            } else if (window.Proj4js) {
+                return typeof Proj4js.defs[srs] !== "undefined";
+            } else {
+                throw new Error("Missing proj4js library");
             }
-
-            return isValid;
         },
 
         /**
@@ -345,11 +347,25 @@
          */
         _transformCoordinate: function(x, y, targetSrs, sourceSrs) {
             var sourceSrs_ = sourceSrs || this.mbMap.getModel().getCurrentProjectionCode();
-            var lonlat = new OpenLayers.LonLat(x, y).transform(sourceSrs_, targetSrs);
-            return {
-                x: lonlat.lon,
-                y: lonlat.lat
-            };
+            if (window.proj4) {
+                var
+                    fromProj = proj4.Proj(sourceSrs_),
+                    toProj = proj4.Proj(targetSrs),
+                    transformedCoordinates = proj4.transform(fromProj, toProj, [x, y])
+                ;
+                return {
+                    x: transformedCoordinates.x,
+                    y: transformedCoordinates.y
+                };
+            } else if (window.OpenLayers && window.OpenLayers.LonLat) {
+                var lonlat = new OpenLayers.LonLat(x, y).transform(sourceSrs_, targetSrs);
+                return {
+                    x: lonlat.lon,
+                    y: lonlat.lat
+                };
+            } else {
+                throw new Error("Cannot transform");
+            }
         },
         /**
          * Format output coordinate string
