@@ -435,7 +435,6 @@
         /**
          * Show feature on the map
          *
-         * @returns {mapbender.mbCoordinatesUtility}
          * @private
          */
         _showFeature: function () {
