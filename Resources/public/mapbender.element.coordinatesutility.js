@@ -354,8 +354,8 @@
                     transformedCoordinates = proj4.transform(fromProj, toProj, [x, y])
                 ;
                 return {
-                    x: transformedCoordinates[0],
-                    y: transformedCoordinates[1]
+                    x: transformedCoordinates.x,
+                    y: transformedCoordinates.y
                 };
             } else if (window.OpenLayers && window.OpenLayers.LonLat) {
                 var lonlat = new OpenLayers.LonLat(x, y).transform(sourceSrs_, targetSrs);
