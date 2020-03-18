@@ -377,7 +377,7 @@
          * @private
          */
         _formatOutputString: function (x, y, srsCode) {
-            var decimals = (Mapbender.mapEngine.getProjectionUnitsPerMeter(srsCode) > 0.25)
+            var decimals = (this.mbMap.getModel().getProjectionUnitsPerMeter(srsCode) > 0.25)
                 ? this.DECIMAL_METRIC
                 : this.DECIMAL_ANGULAR;
 
