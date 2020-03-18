@@ -422,12 +422,10 @@
          * @private
          */
         _showFeature: function () {
-            this.highlightLayer.removeAllFeatures();
-            if (null !== this.lon && null !== this.lat) {
-                var geometry = new OpenLayers.Geometry.Point(this.lon, this.lat);
-                var feature = new OpenLayers.Feature.Vector(geometry);
-                this.highlightLayer.addFeatures(feature);
-            }
+            this._removeFeature();
+            var geometry = new OpenLayers.Geometry.Point(this.lon, this.lat);
+            var feature = new OpenLayers.Feature.Vector(geometry);
+            this.highlightLayer.addFeatures(feature);
         },
 
         /**
