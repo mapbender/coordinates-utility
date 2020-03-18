@@ -439,7 +439,7 @@
          * @private
          */
         _showFeature: function () {
-            this.highlightLayer.clear();
+            this._removeFeature();
             this.highlightLayer.addMarker(this.lon, this.lat);
         },
 
