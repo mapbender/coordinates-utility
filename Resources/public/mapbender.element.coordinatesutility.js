@@ -504,6 +504,7 @@
         _transformCoordinateToMapSrs: function () {
             var selectedSrs = $('select.srs', this.element).val();
             var inputCoordinates = $('input.input-coordinate', this.element).val();
+            inputCoordinates = inputCoordinates.replace(/,/g, '.');
             var inputCoordinatesArray = inputCoordinates.split(/ \s*/);
 
             var lat = parseFloat(inputCoordinatesArray.pop());
