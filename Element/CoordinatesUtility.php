@@ -4,6 +4,7 @@ namespace Mapbender\CoordinatesUtilityBundle\Element;
 
 use Mapbender\CoreBundle\Component\Element;
 use Mapbender\CoreBundle\Entity\SRS;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class CoordinatesUtility extends Element
 {
@@ -117,7 +118,7 @@ class CoordinatesUtility extends Element
             $srsName = $srs['name'];
 
             if (isset($srsWithDefinitions[$srsName])) {
-                $srsList[$key]['definition'] = $srsWithDefinitions[$srsName]['definition'];
+                $srsList[$key]['definition'] = $srsWithDefinitions[$srsName]->getDefinition();
             }
         }
 
@@ -126,27 +127,23 @@ class CoordinatesUtility extends Element
 
     /**
      * @param $srsList
-     * @return mixed
+     * @return SRS[] keyed on name
      */
     public function getSrsDefinitionsFromDatabase($srsList)
     {
-        $queryBuilder = $this
-            ->container
-            ->get('doctrine')
-            ->getManager()
-            ->createQueryBuilder();
-
         $srsNames = array_map(function($srs) {
             return $srs['name'];
         }, $srsList);
-
-        $queryBuilder
-            ->select("srs")
-            ->from(SRS::class, 'srs', 'srs.name')
-            ->where('srs.name IN (:srsNames)')
-            ->setParameter('srsNames', $srsNames)
-            ->getQuery();
-
-        return $queryBuilder->getQuery()->getArrayResult();
+        /** @var RegistryInterface $doctrine */
+        $doctrine = $this->container->get('doctrine');
+        /** @var SRS[] $entities */
+        $entities = $doctrine->getRepository(SRS::class)->findBy(array(
+            'name' => $srsNames,
+        ));
+        $entityMap = array();
+        foreach ($entities as $srs) {
+            $entityMap[$srs->getName()] = $srs;
+        }
+        return $entityMap;
     }
 }
