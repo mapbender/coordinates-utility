@@ -3,10 +3,12 @@
 namespace Mapbender\CoordinatesUtilityBundle\Element;
 
 use Mapbender\CoreBundle\Component\Element;
+use Mapbender\CoreBundle\Component\ElementBase\ConfigMigrationInterface;
+use Mapbender\CoreBundle\Entity;
 use Mapbender\CoreBundle\Entity\SRS;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
-class CoordinatesUtility extends Element
+class CoordinatesUtility extends Element implements ConfigMigrationInterface
 {
     /**
      * @inheritdoc
@@ -94,15 +96,6 @@ class CoordinatesUtility extends Element
         if (!empty($conf['srsList'])) {
             $conf['srsList'] = $this->addSrsDefinitions($conf['srsList']);
         }
-
-        if (!isset($conf['zoomlevel'])) {
-            $conf['zoomlevel'] = CoordinatesUtility::getDefaultConfiguration()['zoomlevel'];
-        }
-        // Coords utility doesn't have an autoOpen backend option, and doesn't support it in the frontend
-        // However, some legacy / cloned / YAML-based etc Applications may have a value there that will
-        // royally confuse controlling buttons. Just make sure it's never there.
-        unset($conf['autoOpen']);
-
         return $conf;
     }
 
@@ -177,5 +170,21 @@ class CoordinatesUtility extends Element
             $entityMap[$srs->getName()] = $srs;
         }
         return $entityMap;
+    }
+
+    public static function updateEntityConfig(Entity\Element $entity)
+    {
+        $conf = $entity->getConfiguration();
+        // Coords utility doesn't have an autoOpen backend option, and doesn't support it in the frontend
+        // However, some legacy / cloned / YAML-based etc Applications may have a value there that will
+        // royally confuse controlling buttons. Just make sure it's never there.
+        unset($conf['autoOpen']);
+        // Amend zoomlevel
+        // NOTE: '0' is a valid zoomlevel (avoid !empty check)
+        if (!\array_key_exists('zoomlevel', $conf) || !\is_numeric($conf['zoomlevel'])) {
+            $conf['zoomlevel'] = static::getDefaultConfiguration()['zoomlevel'];
+        }
+
+        $entity->setConfiguration($conf);
     }
 }
