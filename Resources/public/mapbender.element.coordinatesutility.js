@@ -6,7 +6,9 @@
 
     $.widget("mapbender.mbCoordinatesUtility", {
         options: {
-            target:    null
+            srsList: [],
+            addMapSrsList: true,
+            zoomlevel: 6
         },
         mapClickActive: false,
 
