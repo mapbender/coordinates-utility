@@ -2,24 +2,14 @@
 
 namespace Mapbender\CoordinatesUtilityBundle;
 
-use Mapbender\CoreBundle\Component\MapbenderBundle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class MapbenderCoordinatesUtilityBundle extends MapbenderBundle
+class MapbenderCoordinatesUtilityBundle extends Bundle
 {
-    /**
-     * @inheritdoc
-     */
-    public function getElements()
-    {
-        return [
-            "Mapbender\CoordinatesUtilityBundle\Element\CoordinatesUtility",
-        ];
-    }
-
     public function build(ContainerBuilder $container)
     {
         $configLocator = new FileLocator(__DIR__ . '/Resources/config');

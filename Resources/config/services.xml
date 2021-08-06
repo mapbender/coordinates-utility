@@ -7,5 +7,9 @@
             <tag name="form.type" />
             <argument type="service" id="router" />
         </service>
+        <service id="mapbender.element.CoordinatesUtility" class="Mapbender\CoordinatesUtilityBundle\Element\CoordinatesUtility">
+            <tag name="mapbender.element" />
+            <argument type="service" id="doctrine" />
+        </service>
     </services>
 </container>

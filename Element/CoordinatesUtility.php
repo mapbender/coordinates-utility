@@ -2,14 +2,23 @@
 
 namespace Mapbender\CoordinatesUtilityBundle\Element;
 
-use Mapbender\CoreBundle\Component\Element;
+use Mapbender\Component\Element\AbstractElementService;
+use Mapbender\Component\Element\TemplateView;
 use Mapbender\CoreBundle\Component\ElementBase\ConfigMigrationInterface;
-use Mapbender\CoreBundle\Entity;
+use Mapbender\CoreBundle\Entity\Element;
 use Mapbender\CoreBundle\Entity\SRS;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
-class CoordinatesUtility extends Element implements ConfigMigrationInterface
+class CoordinatesUtility extends AbstractElementService implements ConfigMigrationInterface
 {
+    /** @var RegistryInterface */
+    protected $doctrineRegistry;
+
+    public function __construct(RegistryInterface $doctrineRegistry)
+    {
+        $this->doctrineRegistry = $doctrineRegistry;
+    }
+
     /**
      * @inheritdoc
      */
@@ -29,7 +38,7 @@ class CoordinatesUtility extends Element implements ConfigMigrationInterface
     /**
      * @inheritdoc
      */
-    public function getAssets()
+    public function getRequiredAssets(Element $element)
     {
         return [
             'js' => [
@@ -59,7 +68,7 @@ class CoordinatesUtility extends Element implements ConfigMigrationInterface
     /**
      * @inheritdoc
      */
-    public function getWidgetName()
+    public function getWidgetName(Element $element)
     {
         return 'mapbender.mbCoordinatesUtility';
     }
@@ -80,17 +89,16 @@ class CoordinatesUtility extends Element implements ConfigMigrationInterface
         return 'MapbenderCoordinatesUtilityBundle:ElementAdmin:coordinatesutility.html.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getFrontendTemplatePath($suffix = '.html.twig')
+    public function getView(Element $element)
     {
-        return 'MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.html.twig';
+        $view = new TemplateView('MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.html.twig');
+        $view->attributes['class'] = 'mb-element-coordinatesutility';
+        return $view;
     }
 
-    public function getPublicConfiguration()
+    public function getClientConfiguration(Element $element)
     {
-        $conf = $this->entity->getConfiguration() ?: array();
+        $conf = $element->getConfiguration() ?: array();
 
         if (!empty($conf['srsList'])) {
             $conf['srsList'] = $this->addSrsDefinitions($conf['srsList']);
@@ -158,10 +166,8 @@ class CoordinatesUtility extends Element implements ConfigMigrationInterface
         $srsNames = array_map(function($srs) {
             return $srs['name'];
         }, $srsList);
-        /** @var RegistryInterface $doctrine */
-        $doctrine = $this->container->get('doctrine');
         /** @var SRS[] $entities */
-        $entities = $doctrine->getRepository(SRS::class)->findBy(array(
+        $entities = $this->doctrineRegistry->getRepository(SRS::class)->findBy(array(
             'name' => $srsNames,
         ));
         $entityMap = array();
@@ -171,7 +177,7 @@ class CoordinatesUtility extends Element implements ConfigMigrationInterface
         return $entityMap;
     }
 
-    public static function updateEntityConfig(Entity\Element $entity)
+    public static function updateEntityConfig(Element $entity)
     {
         $conf = $entity->getConfiguration();
         // Coords utility doesn't have an autoOpen backend option, and doesn't support it in the frontend
