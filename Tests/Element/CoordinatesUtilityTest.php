@@ -4,9 +4,8 @@ namespace Mapbender\CoordinatesUtilityBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-use Mapbender\CoreBundle\Component\Application;
-use Mapbender\CoreBundle\Entity\Element as Entity;
-use Mapbender\CoreBundle\Entity\Application as ApplicationEntity;
+use Mapbender\CoreBundle\Entity\Element;
+use Mapbender\CoreBundle\Entity\Application;
 
 use Mapbender\CoordinatesUtilityBundle\Element\CoordinatesUtility;
 
@@ -20,6 +19,8 @@ class CoordinatesUtilityTest extends WebTestCase
      * @var CoordinatesUtility
      */
     private $coordinatesUtility;
+    /** @var Element */
+    protected $element;
 
     public function setUp()
     {
@@ -27,12 +28,10 @@ class CoordinatesUtilityTest extends WebTestCase
         static::$kernel;
 
         $container = static::$kernel->getContainer();
+        $this->element = new Element();
+        $this->element->setApplication(new Application());
 
-        $applicationEntity = new ApplicationEntity();
-        $application = new Application($container, $applicationEntity, []);
-        $entity = new Entity();
-
-        $this->coordinatesUtility = new CoordinatesUtility($application, $container, $entity);
+        $this->coordinatesUtility = new CoordinatesUtility($container->get('doctrine'));
     }
 
     /**
@@ -42,7 +41,7 @@ class CoordinatesUtilityTest extends WebTestCase
     {
         $actual = $this
             ->coordinatesUtility
-            ->getWidgetName();
+            ->getWidgetName($this->element);
 
         $expected = "mapbender.mbCoordinatesUtility";
 
