@@ -6,7 +6,9 @@
 
     $.widget("mapbender.mbCoordinatesUtility", {
         options: {
-            target:    null
+            srsList: [],
+            addMapSrsList: true,
+            zoomlevel: 6
         },
         mapClickActive: false,
 
@@ -42,14 +44,12 @@
          * @private
          */
         _create: function () {
-            var widget = this,
-                options = widget.options;
+            var widget = this;
 
-            if (!Mapbender.checkTarget("mbCoordinatesUtility", options.target)) {
-                return;
-            }
-
-            Mapbender.elementRegistry.onElementReady(options.target, $.proxy(widget._setup, widget));
+            Mapbender.elementRegistry.waitReady('.mb-element-map').then(function(mbMap) {
+                widget.mbMap = mbMap;
+                widget._setup();
+            });
         },
 
         /**
@@ -58,7 +58,6 @@
          * @private
          */
         _setup: function () {
-            this.mbMap = $("#" + this.options.target).data("mapbenderMbMap");
             this.highlightLayer = window.Mapbender.vectorLayerPool.getElementLayer(this, 0);
 
             this.isPopUpDialog = !this.element.closest('.sidePane,.sideContent').length;

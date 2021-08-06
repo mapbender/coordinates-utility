@@ -3,9 +3,12 @@
 namespace Mapbender\CoordinatesUtilityBundle\Element;
 
 use Mapbender\CoreBundle\Component\Element;
+use Mapbender\CoreBundle\Component\ElementBase\ConfigMigrationInterface;
+use Mapbender\CoreBundle\Entity;
 use Mapbender\CoreBundle\Entity\SRS;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
-class CoordinatesUtility extends Element
+class CoordinatesUtility extends Element implements ConfigMigrationInterface
 {
     /**
      * @inheritdoc
@@ -33,11 +36,11 @@ class CoordinatesUtility extends Element
                 '@MapbenderCoordinatesUtilityBundle/Resources/public/mapbender.element.coordinatesutility.js',
             ],
             'css' => [
-                '@MapbenderCoordinatesUtilityBundle/Resources/public/sass/element/coordinatesutility.scss'
+                '@MapbenderCoordinatesUtilityBundle/Resources/public/sass/element/coordinatesutility.scss',
             ],
             'trans' => [
                 'mb.coordinatesutility.widget.*',
-            ]
+            ],
         ];
     }
 
@@ -47,8 +50,7 @@ class CoordinatesUtility extends Element
     public static function getDefaultConfiguration()
     {
         return [
-            'target'    => null,
-            'srsList'   => '',
+            'srsList' => array(),
             'addMapSrsList' => true,
             'zoomlevel' => 6,
         ];
@@ -86,32 +88,13 @@ class CoordinatesUtility extends Element
         return 'MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.html.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getConfiguration()
-    {
-        $configuration = parent::getConfiguration();
-
-        if (isset($configuration['srsList']) && !empty($configuration['srsList'])) {
-            $configuration['srsList'] = $this->addSrsDefinitions($configuration['srsList']);
-        }
-
-        return $configuration;
-    }
-
     public function getPublicConfiguration()
     {
-        $conf = parent::getPublicConfiguration();
+        $conf = $this->entity->getConfiguration() ?: array();
 
-        if (!isset($conf['zoomlevel'])) {
-            $conf['zoomlevel'] = CoordinatesUtility::getDefaultConfiguration()['zoomlevel'];
+        if (!empty($conf['srsList'])) {
+            $conf['srsList'] = $this->addSrsDefinitions($conf['srsList']);
         }
-        // Coords utility doesn't have an autoOpen backend option, and doesn't support it in the frontend
-        // However, some legacy / cloned / YAML-based etc Applications may have a value there that will
-        // royally confuse controlling buttons. Just make sure it's never there.
-        unset($conf['autoOpen']);
-
         return $conf;
     }
 
@@ -121,13 +104,20 @@ class CoordinatesUtility extends Element
      */
     public function addSrsDefinitions($srsList)
     {
+        $srsList = $this->normalizeSrsList($srsList);
         $srsWithDefinitions = $this->getSrsDefinitionsFromDatabase($srsList);
 
-        foreach ($srsList as $key => $srs) {
-            $srsName = $srs['name'];
+        foreach ($srsList as $key => $srsSpec) {
+            $srsName = $srsSpec['name'];
 
             if (isset($srsWithDefinitions[$srsName])) {
-                $srsList[$key]['definition'] = $srsWithDefinitions[$srsName]['definition'];
+                $srs = $srsWithDefinitions[$srsName];
+                $srsList[$key]['definition'] = $srs->getDefinition();
+                if (empty($srsList[$key]['title'])) {
+                    $srsList[$key]['title'] = $srs->getTitle() ?: $srs->getName();
+                }
+            } elseif (empty($srsList[$key]['title'])) {
+                $srsList[$key]['title'] = $srsList[$key]['name'];
             }
         }
 
@@ -135,28 +125,65 @@ class CoordinatesUtility extends Element
     }
 
     /**
+     * @param mixed[] $srsList strings or arrays
+     * @return mixed[][]
+     */
+    protected function normalizeSrsList($srsList)
+    {
+        // Tolerate both arrays + scalars
+        /** @see Type\CoordinatesUtilityAdminType::reverseTransform */
+        foreach ($srsList as $k => $srsSpec) {
+            if (\is_string($srsSpec)) {
+                $parts = explode('|', $srsSpec, 2);
+                $name = trim($parts[0]);
+                $title = (count($parts) > 1) ? $parts[1] : null;
+            } else {
+                $name = $srsSpec['name'];
+                $title = !empty($srsSpec['title']) ? $srsSpec['title'] : null;
+            }
+            $srsList[$k] = array(
+                'name' => $name,
+                'title' => trim($title) ?: null,
+            );
+        }
+        return $srsList;
+    }
+
+    /**
      * @param $srsList
-     * @return mixed
+     * @return SRS[] keyed on name
      */
     public function getSrsDefinitionsFromDatabase($srsList)
     {
-        $queryBuilder = $this
-            ->container
-            ->get('doctrine')
-            ->getManager()
-            ->createQueryBuilder();
-
         $srsNames = array_map(function($srs) {
             return $srs['name'];
         }, $srsList);
+        /** @var RegistryInterface $doctrine */
+        $doctrine = $this->container->get('doctrine');
+        /** @var SRS[] $entities */
+        $entities = $doctrine->getRepository(SRS::class)->findBy(array(
+            'name' => $srsNames,
+        ));
+        $entityMap = array();
+        foreach ($entities as $srs) {
+            $entityMap[$srs->getName()] = $srs;
+        }
+        return $entityMap;
+    }
 
-        $queryBuilder
-            ->select("srs")
-            ->from(SRS::class, 'srs', 'srs.name')
-            ->where('srs.name IN (:srsNames)')
-            ->setParameter('srsNames', $srsNames)
-            ->getQuery();
+    public static function updateEntityConfig(Entity\Element $entity)
+    {
+        $conf = $entity->getConfiguration();
+        // Coords utility doesn't have an autoOpen backend option, and doesn't support it in the frontend
+        // However, some legacy / cloned / YAML-based etc Applications may have a value there that will
+        // royally confuse controlling buttons. Just make sure it's never there.
+        unset($conf['autoOpen']);
+        // Amend zoomlevel
+        // NOTE: '0' is a valid zoomlevel (avoid !empty check)
+        if (!\array_key_exists('zoomlevel', $conf) || !\is_numeric($conf['zoomlevel'])) {
+            $conf['zoomlevel'] = static::getDefaultConfiguration()['zoomlevel'];
+        }
 
-        return $queryBuilder->getQuery()->getArrayResult();
+        $entity->setConfiguration($conf);
     }
 }

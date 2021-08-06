@@ -1,16 +1,11 @@
-<div class="defaultForm elementForm ui-widget" id="search-coordinate">
+<div class="defaultForm elementForm">
     {{ form_row(form.title) }}
-    {{ form_row(form.configuration.target) }}
-    {{ form_row(form.configuration.srsList, {'attr': {'class': 'srs-autocomplete', 'data-autocomplete-url': path('srs_autocomplete')}}) }}
+    {{ form_row(form.configuration.srsList) }}
     <div id="srs-autocomplete-variants"></div>
 
     {{ form_row(form.configuration.zoomlevel) }}
 
-    <div>
-        {# amenity for legacy form theme #}
-    {{ form_widget(form.configuration.addMapSrsList) }}{{ form_label(form.configuration.addMapSrsList) }}
-    </div>
-
+    {{ form_row(form.configuration.addMapSrsList) }}
     <div class="clearContainer"></div>
 </div>
 
