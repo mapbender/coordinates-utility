@@ -36,25 +36,6 @@ class CoordinatesUtilityTest extends WebTestCase
     }
 
     /**
-     * Test default configuration
-     */
-    public function testDefaultConfiguration()
-    {
-        $actual = $this
-            ->coordinatesUtility
-            ->getDefaultConfiguration();
-
-        $expected = [
-            'type'      => null,
-            'target'    => null,
-            'srsList'   => '',
-            'addMapSrsList' => true,
-        ];
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    /**
      * Test widget name
      */
     public function testGetWidgetName()

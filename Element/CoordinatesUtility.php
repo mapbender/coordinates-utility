@@ -50,7 +50,6 @@ class CoordinatesUtility extends Element implements ConfigMigrationInterface
     public static function getDefaultConfiguration()
     {
         return [
-            'target'    => null,
             'srsList' => array(),
             'addMapSrsList' => true,
             'zoomlevel' => 6,

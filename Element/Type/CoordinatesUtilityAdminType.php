@@ -21,11 +21,6 @@ class CoordinatesUtilityAdminType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('target', 'Mapbender\CoreBundle\Element\Type\TargetElementType',[
-                'element_class' => 'Mapbender\\CoreBundle\\Element\\Map',
-                'application'   => $options['application'],
-                'required'      => false
-            ])
             ->add('srsList', 'Mapbender\CoordinatesUtilityBundle\Element\Type\SrsListType', array(
                 'required' => false,
             ))
