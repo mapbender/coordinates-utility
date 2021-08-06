@@ -3,7 +3,7 @@
 
 'use strict';
 
-$(".srs-autocomplete input")
+$("input.srs-autocomplete")
     .on("keydown", function (event) {
         // don't navigate away from the field on tab when selecting an item
         if (event.keyCode === $.ui.keyCode.TAB && $(this).autocomplete("instance").menu.active) {
