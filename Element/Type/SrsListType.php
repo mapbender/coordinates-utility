@@ -8,9 +8,18 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SrsListType extends AbstractType implements DataTransformerInterface
 {
+    /** @var UrlGeneratorInterface */
+    protected $urlGenerator;
+
+    public function __construct(UrlGeneratorInterface $urlGenerator)
+    {
+        $this->urlGenerator = $urlGenerator;
+    }
 
     public function getParent()
     {
@@ -20,6 +29,16 @@ class SrsListType extends AbstractType implements DataTransformerInterface
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->addViewTransformer($this);
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'attr' => array(
+                'class' => 'srs-autocomplete',
+                'data-autocomplete-url' => $this->urlGenerator->generate('srs_autocomplete'),
+            ),
+        ));
     }
 
     /**
