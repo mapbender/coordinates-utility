@@ -34,11 +34,11 @@ class CoordinatesUtility extends Element
                 '@MapbenderCoordinatesUtilityBundle/Resources/public/mapbender.element.coordinatesutility.js',
             ],
             'css' => [
-                '@MapbenderCoordinatesUtilityBundle/Resources/public/sass/element/coordinatesutility.scss'
+                '@MapbenderCoordinatesUtilityBundle/Resources/public/sass/element/coordinatesutility.scss',
             ],
             'trans' => [
                 'mb.coordinatesutility.widget.*',
-            ]
+            ],
         ];
     }
 
@@ -49,7 +49,7 @@ class CoordinatesUtility extends Element
     {
         return [
             'target'    => null,
-            'srsList'   => '',
+            'srsList' => array(),
             'addMapSrsList' => true,
             'zoomlevel' => 6,
         ];
