@@ -1,3 +1,6 @@
+## 1.1.0
+* Add Openlayers 4/5/6 support
+
 ## 1.0.9
 * Update for current Mapbender API conventions (no functional changes)
 
