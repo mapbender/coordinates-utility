@@ -86,23 +86,13 @@ class CoordinatesUtility extends Element
         return 'MapbenderCoordinatesUtilityBundle:Element:coordinatesutility.html.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getConfiguration()
-    {
-        $configuration = parent::getConfiguration();
-
-        if (isset($configuration['srsList']) && !empty($configuration['srsList'])) {
-            $configuration['srsList'] = $this->addSrsDefinitions($configuration['srsList']);
-        }
-
-        return $configuration;
-    }
-
     public function getPublicConfiguration()
     {
-        $conf = parent::getPublicConfiguration();
+        $conf = $this->entity->getConfiguration() ?: array();
+
+        if (!empty($conf['srsList'])) {
+            $conf['srsList'] = $this->addSrsDefinitions($conf['srsList']);
+        }
 
         if (!isset($conf['zoomlevel'])) {
             $conf['zoomlevel'] = CoordinatesUtility::getDefaultConfiguration()['zoomlevel'];
