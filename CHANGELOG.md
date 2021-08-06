@@ -1,3 +1,8 @@
+## dev-master @ 86625b4e9c930b57f605fea5fa84e32c7d0e5cea (1.2 WIP)
+* Reimplement for Symfony 4 conformance
+
+NOTE: This version cannot be installed on Mapbender before v3.2.6.
+
 ## 1.1.1
 * Fix errors if Yaml configuration completely omits `srsList`
 * Fix errors if Yaml configuration supplies a list of (scalar string) srs names in `srsList`
