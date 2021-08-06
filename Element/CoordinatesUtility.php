@@ -112,16 +112,48 @@ class CoordinatesUtility extends Element
      */
     public function addSrsDefinitions($srsList)
     {
+        $srsList = $this->normalizeSrsList($srsList);
         $srsWithDefinitions = $this->getSrsDefinitionsFromDatabase($srsList);
 
-        foreach ($srsList as $key => $srs) {
-            $srsName = $srs['name'];
+        foreach ($srsList as $key => $srsSpec) {
+            $srsName = $srsSpec['name'];
 
             if (isset($srsWithDefinitions[$srsName])) {
-                $srsList[$key]['definition'] = $srsWithDefinitions[$srsName]->getDefinition();
+                $srs = $srsWithDefinitions[$srsName];
+                $srsList[$key]['definition'] = $srs->getDefinition();
+                if (empty($srsList[$key]['title'])) {
+                    $srsList[$key]['title'] = $srs->getTitle() ?: $srs->getName();
+                }
+            } elseif (empty($srsList[$key]['title'])) {
+                $srsList[$key]['title'] = $srsList[$key]['name'];
             }
         }
 
+        return $srsList;
+    }
+
+    /**
+     * @param mixed[] $srsList strings or arrays
+     * @return mixed[][]
+     */
+    protected function normalizeSrsList($srsList)
+    {
+        // Tolerate both arrays + scalars
+        /** @see Type\CoordinatesUtilityAdminType::reverseTransform */
+        foreach ($srsList as $k => $srsSpec) {
+            if (\is_string($srsSpec)) {
+                $parts = explode('|', $srsSpec, 2);
+                $name = trim($parts[0]);
+                $title = (count($parts) > 1) ? $parts[1] : null;
+            } else {
+                $name = $srsSpec['name'];
+                $title = !empty($srsSpec['title']) ? $srsSpec['title'] : null;
+            }
+            $srsList[$k] = array(
+                'name' => $name,
+                'title' => trim($title) ?: null,
+            );
+        }
         return $srsList;
     }
 
