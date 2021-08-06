@@ -1,3 +1,8 @@
+## 1.1.1
+* Fix errors if Yaml configuration completely omits `srsList`
+* Fix errors if Yaml configuration supplies a list of (scalar string) srs names in `srsList`
+* Fix inconsistent backend form typography vs other Mapbender elements
+
 ## 1.1.0
 * Add Openlayers 4/5/6 support
 
