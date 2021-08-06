@@ -1,13 +1,13 @@
-<div class="defaultForm elementForm">
-    {{ form_row(form.title) }}
-    {{ form_row(form.configuration.srsList) }}
-    <div id="srs-autocomplete-variants"></div>
+{%- form_theme form _self -%}
+{%- if false -%}{#- define block without immediate rendering -#}
+    {%- block srslist_widget -%}
+        {{- block('form_widget_simple') -}}
+        <div id="srs-autocomplete-variants"></div>
+    {%- endblock -%}
+{%- endif -%}
 
-    {{ form_row(form.configuration.zoomlevel) }}
-
-    {{ form_row(form.configuration.addMapSrsList) }}
-    <div class="clearContainer"></div>
-</div>
+{{ form_row(form.title) }}
+{{ form_rest(form.configuration) }}
 
 <link rel="stylesheet" href="{{ asset('components/jquery-ui/themes/base/jquery-ui.min.css') }}" />
 <script type="text/javascript" src="{{ asset('bundles/mapbendercoordinatesutility/srs-autocomplete.js') }}"></script>

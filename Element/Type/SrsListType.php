@@ -26,6 +26,11 @@ class SrsListType extends AbstractType implements DataTransformerInterface
         return 'Symfony\Component\Form\Extension\Core\Type\TextType';
     }
 
+    public function getBlockPrefix()
+    {
+        return 'srslist';
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->addViewTransformer($this);
