@@ -9,8 +9,16 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Mapbender\CoreBundle\Entity\SRS;
 
-class CoordinatesUtilityController extends Controller
+class CoordinatesUtilityController
 {
+    /** @var RegistryInterface */
+    protected $doctrineRegistry;
+
+    public function __construct(RegistryInterface $doctrineRegistry)
+    {
+        $this->doctrineRegistry = $doctrineRegistry;
+    }
+
     /**
      * Quantity of query results
      */
@@ -29,9 +37,7 @@ class CoordinatesUtilityController extends Controller
             ->query
             ->get('term');
 
-        $repository = $this
-            ->getDoctrine()
-            ->getRepository(SRS::class);
+        $repository = $this->doctrineRegistry->getRepository(SRS::class);
 
         $query = $repository
             ->createQueryBuilder('srs')
