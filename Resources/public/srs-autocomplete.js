@@ -3,6 +3,7 @@
 
 'use strict';
 
+!(function($) {
 $("input.srs-autocomplete")
     .on("keydown", function (event) {
         // don't navigate away from the field on tab when selecting an item
@@ -78,3 +79,4 @@ function disableCopyPaste(event) {
         event.preventDefault();
     }
 }
+}(jQuery));
