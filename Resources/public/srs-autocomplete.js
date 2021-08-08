@@ -50,8 +50,8 @@ $("input.srs-autocomplete")
 /**
  * Split string by comma
  *
- * @param val
- * @returns {Array|*}
+ * @param {String} val
+ * @returns {Array<String>}
  */
 function split(val) {
     return val.split(/,\s*/);
@@ -61,10 +61,10 @@ function split(val) {
  * Extract last element from the autocomplete field
  *
  * @param term
- * @returns {T}
+ * @returns {String}
  */
 function extractLast(term) {
-    return split(term).pop();
+    return split(term).pop() || '';
 }
 
 /**
