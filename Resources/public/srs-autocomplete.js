@@ -13,6 +13,9 @@ $("input.srs-autocomplete")
 
         disableCopyPaste(event);
     })
+    .each(function() {
+        $(this).after($(document.createElement('div')).addClass('-js-ac-results'));
+    })
     .autocomplete({
         source: function (request, response) {
             var url = $(this.element).data('autocomplete-url');
@@ -20,7 +23,7 @@ $("input.srs-autocomplete")
                 term: extractLast(request.term)
             }, response);
         },
-        appendTo: "#srs-autocomplete-variants",
+        appendTo: ".-js-ac-results",
         minLength: 2,
         search: function () {
             var term = extractLast(this.value);
