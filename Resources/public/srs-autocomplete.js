@@ -17,11 +17,11 @@ $("input.srs-autocomplete")
         $(this).after($(document.createElement('div')).addClass('-js-ac-results'));
     })
     .autocomplete({
-        source: function (request, response) {
+        source: function(request, responseCallback) {
             var url = $(this.element).data('autocomplete-url');
             $.getJSON(url, {
                 term: extractLast(request.term)
-            }, response);
+            }).then(responseCallback);
         },
         appendTo: ".-js-ac-results",
         minLength: 2,
