@@ -2,6 +2,9 @@
 
 namespace Mapbender\CoordinatesUtilityBundle\Controller;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,18 +40,26 @@ class CoordinatesUtilityController
             ->query
             ->get('term');
 
+        // All SRS names are upper case!
+        $term = \strtoupper($term);
+
         $repository = $this->doctrineRegistry->getRepository(SRS::class);
-
-        $query = $repository
-            ->createQueryBuilder('srs')
-            ->select("CONCAT(srs.name, ' | ', srs.title) as name")
-            ->where('srs.name LIKE :term')
-            ->setParameter('term', '%'.$term.'%')
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->contains('name', $term))
             ->setMaxResults(self::RESULTS_QUANTITY)
-            ->getQuery();
+        ;
 
-        $srsArray = $query->getResult();
-
-        return new JsonResponse(array_column($srsArray, 'name'));
+        /** @var SRS[] $results */
+        if ($repository instanceof Selectable) {
+            $results = $repository->matching($criteria)->getValues();
+        } else {
+            $collection = new ArrayCollection($repository->findAll());
+            $results = $collection->matching($criteria);
+        }
+        $responseData = array();
+        foreach ($results as $srs) {
+            $responseData[] = $srs->getName() . ' | ' . $srs->getTitle();
+        }
+        return new JsonResponse($responseData);
     }
 }
