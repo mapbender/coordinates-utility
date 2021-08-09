@@ -100,7 +100,7 @@
         _setupButtons: function () {
             var widget = this;
 
-            $('.copyClipBoard', widget.element).on('click',  $.proxy(widget._copyToClipboard, widget));
+            $('.-fn-copy-clipboard', widget.element).on('click',  this._copyToClipboard);
             $('.center-map', widget.element).on('click',  $.proxy(widget._centerMap, widget));
 
             if (!widget.isPopUpDialog) {
@@ -457,7 +457,7 @@
          * @private
          */
         _copyToClipboard: function (e) {
-            $(e.target).parent().find('input').select();
+            $('input', $(this).parent()).select();
             document.execCommand("copy");
         },
 

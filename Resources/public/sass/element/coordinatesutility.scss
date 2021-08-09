@@ -2,35 +2,6 @@
     div.block {
         margin-bottom: 10px;
     }
-
-    .dropdown {
-        width:100%;
-        margin-bottom: 10px;
-    }
-
-    .input-to-clipboard {
-        position: relative;
-        width:100%;
-        & input {
-            width:100%;
-            font-size: $space*0.7;
-            line-height: $inputHeight;
-            padding-right: 26px;
-            &.error {
-                color:$errorColor;
-                background-color: lighten($errorColor, 50%);
-                border:solid 1px lighten($errorColor, 40%);
-            }
-        }
-        & .copyClipBoard {
-            font-size: $inputHeight * 0.8;
-            line-height: $inputHeight;
-            color: $inputForegroundColor;
-            position: absolute;
-            right: $inputHeight * 0.1;
-        }
-    }
-
     .button-group {
         height: $space*2;
         width: 100%;

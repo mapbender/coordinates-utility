@@ -1,28 +1,28 @@
-    <div class="block coordinates-extern">
-        <p>{{ "mb.coordinatesutility.view.srs.title" | trans }}</p>
 
+    <div class="form-group">
+        <p>{{ "mb.coordinatesutility.view.srs.title" | trans }}</p>
         <div class="dropdown" title="{{ "mb.coordinatesutility.view.srs.tooltip" | trans }}">
             <select class="hiddenDropdown srs"></select>
             <div class="dropdownValue iconDown"></div>
             <ul class="dropdownList"></ul>
         </div>
-
-        <div class="input-to-clipboard">
-            <input class="input input-coordinate" type="text" title="{{ "mb.coordinatesutility.view.transformedCoordinates.tooltip" | trans }}" value=""/>
-            <i class="fa far fa-paste copyClipBoard hover-highlight-effect" title="{{ "mb.coordinatesutility.view.copytoclipboard.tooltip" | trans }}"></i>
+    </div>
+    <div class="form-group">
+        <div class="input-group">
+            <input class="form-control input-coordinate" type="text" title="{{ "mb.coordinatesutility.view.transformedCoordinates.tooltip" | trans }}" value=""/>
+            <div class="input-group-addon -fn-copy-clipboard"><i class="fa far fa-paste" title="{{ "mb.coordinatesutility.view.copytoclipboard.tooltip" | trans }}"></i></div>
         </div>
-
     </div>
 
-    <div class="block coordinates-intern">
+    <div class="form-group">
         <p>{{ "mb.coordinatesutility.view.originCoordinates.title" | trans }}</p>
-        <div class="input-to-clipboard">
-            <input class="input map-coordinate" type="text" title="{{ "mb.coordinatesutility.view.originCoordinates.title" | trans }} ({{ "mb.coordinatesutility.view.originCoordinates.tooltip" | trans }})" readonly="true" value=""/>
-            <i class="fa far fa-paste copyClipBoard hover-highlight-effect" title="{{ "mb.coordinatesutility.view.copytoclipboard.tooltip" | trans }}"></i>
+        <div class="input-group">
+            <input class="form-control map-coordinate" type="text" title="{{ "mb.coordinatesutility.view.transformedCoordinates.tooltip" | trans }}" value=""/>
+            <div class="input-group-addon -fn-copy-clipboard"><i class="fa far fa-paste" title="{{ "mb.coordinatesutility.view.copytoclipboard.tooltip" | trans }}"></i></div>
         </div>
     </div>
 
-    <div class="button-group">
-        <span class="button coordinate-search left hidden">{{ "mb.coordinatesutility.view.button.search" | trans }}</span>
-        <span class="button center-map right">{{ "mb.coordinatesutility.view.button.centermap" | trans }}</span>
+    <div class="btn-toolbar">
+        <button type="button" class="btn btn-sm btn-default coordinate-search hidden">{{ "mb.coordinatesutility.view.button.search" | trans }}</button>
+        <button type="button" class="btn btn-sm btn-default center-map right">{{ "mb.coordinatesutility.view.button.centermap" | trans }}</button>
     </div>
