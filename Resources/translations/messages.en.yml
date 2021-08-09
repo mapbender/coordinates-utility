@@ -5,10 +5,6 @@ mb:
             title: 'Coordinates utility'
             description: 'Transform coordinates in different SRS. Navigate to coordinates on the map.'
 
-        tag:
-            coordinate: 'coordinate'
-            map: 'map'
-
         widget:
             error:
                 noSrs: 'No SRS is defined'
