@@ -6,25 +6,54 @@ Retrieve coordinates from the map, Zoom to a given map coordinate
 * Transform coordinates to different SRS
 * Navigate to selected coordinates on the map
 
-## Installation 
-* First you need installed mapbender3-starter https://github.com/mapbender/mapbender-starter#installation project
-* Add required module to mapbender
-```sh
-$ cd application/
-$ bin/composer require "mapbender/coordinates-utility"
+## Element configuration
+Coordinates utility element supports the following configuration values:
+
+| Name | Type | Default | Explanation |
+|---|---|---|---|
+|addMapSrsList|boolean|true|Offer all SRS configured on the map element for coordinate transformation|
+|srsList|list of strings|empty array|Additional SRS choices to offer for coordinate transformation. Must follow "EPSG:\<digits\>" form|
+|zoomlevel|integer|6|Zoom level to use when centering map (lower = zoomed further out)|
+
+```yaml
+<...>
+  sidepane:
+    class: Mapbender\CoordinatesUtilityBundle\Element\CoordinatesUtility
+    addMapSrsList: true      # =default; offer all SRS configured on the Map element
+    srsList: ['EPSG:25834']  # Add an additional SRS for transformation
+    zoomlevel: 3             # zoom in closer than default on "Center map"
 ```
-* Register routers in app/config/routing.yml
+
+### Customizing SRS titles
+It is possible to change the displayed title of SRS choices by using an object form or a pipe separator.
+For the object form, use objects with "name" and "title" keys. The pipe separator form is "\<srs name\>|\<custom title\>".
+
+```yaml
+<...>
+    srsList: 
+      # Rename using object form
+      - {name: 'EPSG:25832', title: 'Renamed UTM32N'}
+      # Rename using pipe separator form
+      - 'EPSG:25834|Renamed UTM34N'
+      # Use standard name
+      - 'EPSG:25831'
+```
+
+NOTE: the backend form input only supports using pipe separator for SRS renaming. The explicit object
+format is legal in Yaml Application definitions only.
+
+## Installation
+The backend form srs suggestions will only work after including the
+registering the controller routes with the Symfony router.
+
+Mapbender Starter already does this.
+
+To do it manually, add the following to your app/config/routing.yml:
 ```yaml
 mapbender_coordinatesutilitybundle:
     resource: "@MapbenderCoordinatesUtilityBundle/Controller/"
     type: annotation
 ```
 
-## Update 
-
-
- ```sh
-$ cd application/
-$ bin/composer update
-```
-
+Note that the top key "mapbender_coordinatesutilitybundle" is technically irrelevant, but must be unique in your routing
+configuration.

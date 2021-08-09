@@ -3,6 +3,11 @@
 
 NOTE: This version cannot be installed on Mapbender before v3.2.6.
 
+## 1.1.2
+* Fix Symfony 4 incompatibility in backend autocompletion controller
+* Fix broken backend srs suggestion layout when matching srs with very long title
+* Document Element configuration
+
 ## 1.1.1
 * Fix errors if Yaml configuration completely omits `srsList`
 * Fix errors if Yaml configuration supplies a list of (scalar string) srs names in `srsList`

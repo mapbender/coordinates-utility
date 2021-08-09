@@ -16,5 +16,7 @@ class MapbenderCoordinatesUtilityBundle extends Bundle
         $loader = new XmlFileLoader($container, $configLocator);
         $loader->load('services.xml');
         $container->addResource(new FileResource($loader->getLocator()->locate('services.xml')));
+        $loader->load('controllers.xml');
+        $container->addResource(new FileResource($loader->getLocator()->locate('controllers.xml')));
     }
 }

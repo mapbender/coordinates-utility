@@ -3,6 +3,7 @@
 
 'use strict';
 
+!(function($) {
 $("input.srs-autocomplete")
     .on("keydown", function (event) {
         // don't navigate away from the field on tab when selecting an item
@@ -12,14 +13,17 @@ $("input.srs-autocomplete")
 
         disableCopyPaste(event);
     })
+    .each(function() {
+        $(this).after($(document.createElement('div')).addClass('-js-ac-results'));
+    })
     .autocomplete({
-        source: function (request, response) {
+        source: function(request, responseCallback) {
             var url = $(this.element).data('autocomplete-url');
             $.getJSON(url, {
                 term: extractLast(request.term)
-            }, response);
+            }).then(responseCallback);
         },
-        appendTo: "#srs-autocomplete-variants",
+        appendTo: ".-js-ac-results",
         minLength: 2,
         search: function () {
             var term = extractLast(this.value);
@@ -49,8 +53,8 @@ $("input.srs-autocomplete")
 /**
  * Split string by comma
  *
- * @param val
- * @returns {Array|*}
+ * @param {String} val
+ * @returns {Array<String>}
  */
 function split(val) {
     return val.split(/,\s*/);
@@ -60,10 +64,10 @@ function split(val) {
  * Extract last element from the autocomplete field
  *
  * @param term
- * @returns {T}
+ * @returns {String}
  */
 function extractLast(term) {
-    return split(term).pop();
+    return split(term).pop() || '';
 }
 
 /**
@@ -78,3 +82,4 @@ function disableCopyPaste(event) {
         event.preventDefault();
     }
 }
+}(jQuery));

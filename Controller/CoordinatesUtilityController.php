@@ -2,15 +2,26 @@
 
 namespace Mapbender\CoordinatesUtilityBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
+use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 use Mapbender\CoreBundle\Entity\SRS;
 
-class CoordinatesUtilityController extends Controller
+class CoordinatesUtilityController
 {
+    /** @var RegistryInterface */
+    protected $doctrineRegistry;
+
+    public function __construct(RegistryInterface $doctrineRegistry)
+    {
+        $this->doctrineRegistry = $doctrineRegistry;
+    }
+
     /**
      * Quantity of query results
      */
@@ -20,6 +31,8 @@ class CoordinatesUtilityController extends Controller
      * Provide autocomplete for SRS
      *
      * @Route("/srs-autocomplete", name="srs_autocomplete", options={"expose"=true})
+     * @param Request $request
+     * @return JsonResponse
      */
     public function srsAutocompleteAction(Request $request)
     {
@@ -27,20 +40,26 @@ class CoordinatesUtilityController extends Controller
             ->query
             ->get('term');
 
-        $repository = $this
-            ->getDoctrine()
-            ->getRepository(SRS::class);
+        // All SRS names are upper case!
+        $term = \strtoupper($term);
 
-        $query = $repository
-            ->createQueryBuilder('srs')
-            ->select("CONCAT(srs.name, ' | ', srs.title) as name")
-            ->where('srs.name LIKE :term')
-            ->setParameter('term', '%'.$term.'%')
+        $repository = $this->doctrineRegistry->getRepository(SRS::class);
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->contains('name', $term))
             ->setMaxResults(self::RESULTS_QUANTITY)
-            ->getQuery();
+        ;
 
-        $srsArray = $query->getResult();
-
-        return new JsonResponse(array_column($srsArray, 'name'));
+        /** @var SRS[] $results */
+        if ($repository instanceof Selectable) {
+            $results = $repository->matching($criteria)->getValues();
+        } else {
+            $collection = new ArrayCollection($repository->findAll());
+            $results = $collection->matching($criteria);
+        }
+        $responseData = array();
+        foreach ($results as $srs) {
+            $responseData[] = $srs->getName() . ' | ' . $srs->getTitle();
+        }
+        return new JsonResponse($responseData);
     }
 }
