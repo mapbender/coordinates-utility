@@ -43,7 +43,7 @@ NOTE: the backend form input only supports using pipe separator for SRS renaming
 format is legal in Yaml Application definitions only.
 
 ## Installation
-The backend form srs suggestions will only work after including the
+The backend form srs suggestions will only work after
 registering the controller routes with the Symfony router.
 
 Mapbender Starter already does this.
