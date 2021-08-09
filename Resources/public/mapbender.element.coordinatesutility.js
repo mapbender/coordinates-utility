@@ -218,12 +218,11 @@
          * Popup HTML window
          */
         popup: function () {
-            var widget = this,
-                element = widget.element;
+            var widget = this;
 
             if (!widget.popupWindow || !widget.popupWindow.$element) {
                 widget.popupWindow = new Mapbender.Popup2({
-                    title:                  element.attr('title'),
+                    title: this.element.attr('data-title'),
                     draggable:              true,
                     resizable:              true,
                     modal:                  false,
@@ -232,7 +231,7 @@
                     closeOnESC:             false,
                     destroyOnClose:         false,
                     detachOnClose:          false,
-                    content:                this.element.removeClass('hidden'),
+                    content: this.element,
                     width:                  450,
                     height:                 400,
                     buttons:                {}
