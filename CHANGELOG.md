@@ -1,5 +1,6 @@
-## dev-master @ 86625b4e9c930b57f605fea5fa84e32c7d0e5cea (1.2 WIP)
+# 1.2.0
 * Reimplement for Symfony 4 conformance
+* Update frontend design for Mapbender 3.2
 
 NOTE: This version cannot be installed on Mapbender before v3.2.6.
 
