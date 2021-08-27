@@ -1,3 +1,7 @@
+# 1.2.1
+* Fix Composer autoload coverage warning for test classes
+* Remove broken legacy test
+
 # 1.2.0
 * Reimplement for Symfony 4 conformance
 * Update frontend design for Mapbender 3.2
