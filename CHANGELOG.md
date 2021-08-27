@@ -1,3 +1,6 @@
+## 1.1.3
+* Fix Composer autoload coverage warning for test classes
+
 ## 1.1.2
 * Fix Symfony 4 incompatibility in backend autocompletion controller
 * Fix broken backend srs suggestion layout when matching srs with very long title
