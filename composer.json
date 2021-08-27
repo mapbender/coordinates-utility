@@ -12,7 +12,8 @@
         "mapbender/mapbender": "^3.1"
     },
     "autoload": {
-        "psr-4": {"Mapbender\\CoordinatesUtilityBundle\\": "."}
+        "psr-4": {"Mapbender\\CoordinatesUtilityBundle\\": "."},
+        "exclude-from-classmap": ["/Tests/"]
     },
     "extra": {
         "branch-alias": {
