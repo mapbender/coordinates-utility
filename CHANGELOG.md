@@ -1,3 +1,6 @@
+# 1.2.2
+* Allow both "," and "." as a decimal separator in manual coordinate entry ([PR#16](https://github.com/mapbender/coordinates-utility/pull/16))
+
 # 1.2.1
 * Fix Composer autoload coverage warning for test classes
 * Remove broken legacy test
@@ -9,7 +12,7 @@
 NOTE: This version cannot be installed on Mapbender before v3.2.6.
 
 ## 1.1.4
-* Allow both "," and "." as a decimal separator in manual coordinate entry
+* Allow both "," and "." as a decimal separator in manual coordinate entry ([PR#16](https://github.com/mapbender/coordinates-utility/pull/16))
 
 ## 1.1.3
 * Fix Composer autoload coverage warning for test classes
