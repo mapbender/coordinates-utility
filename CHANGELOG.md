@@ -8,6 +8,9 @@
 
 NOTE: This version cannot be installed on Mapbender before v3.2.6.
 
+## 1.1.4
+* Allow both "," and "." as a decimal separator in manual coordinate entry
+
 ## 1.1.3
 * Fix Composer autoload coverage warning for test classes
 
