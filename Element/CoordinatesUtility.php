@@ -2,19 +2,19 @@
 
 namespace Mapbender\CoordinatesUtilityBundle\Element;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Mapbender\Component\Element\AbstractElementService;
 use Mapbender\Component\Element\TemplateView;
 use Mapbender\CoreBundle\Component\ElementBase\ConfigMigrationInterface;
 use Mapbender\CoreBundle\Entity\Element;
 use Mapbender\CoreBundle\Entity\SRS;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class CoordinatesUtility extends AbstractElementService implements ConfigMigrationInterface
 {
-    /** @var RegistryInterface */
+    /** @var ManagerRegistry */
     protected $doctrineRegistry;
 
-    public function __construct(RegistryInterface $doctrineRegistry)
+    public function __construct(ManagerRegistry $doctrineRegistry)
     {
         $this->doctrineRegistry = $doctrineRegistry;
     }
