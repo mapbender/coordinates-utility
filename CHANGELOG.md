@@ -1,3 +1,6 @@
+# 1.2.3
+* Fix incompatibility with current doctrine/doctrine-bundle
+
 # 1.2.2
 * Allow both "," and "." as a decimal separator in manual coordinate entry ([PR#16](https://github.com/mapbender/coordinates-utility/pull/16))
 
