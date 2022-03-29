@@ -12,7 +12,7 @@
         },
         mapClickActive: false,
 
-        isPopupDialog: false,
+        isPopUpDialog: false,
 
         callback:       null,
 
