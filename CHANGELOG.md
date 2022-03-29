@@ -1,3 +1,6 @@
+## 1.1.5
+* Fix initially selected SRS not applied to calculations
+
 ## 1.1.4
 * Allow both "," and "." as a decimal separator in manual coordinate entry
 
