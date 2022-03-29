@@ -12,7 +12,7 @@
         },
         mapClickActive: false,
 
-        isPopupDialog: false,
+        isPopUpDialog: false,
 
         callback:       null,
 
@@ -67,6 +67,7 @@
             this._setupSrsDropdown();
             this._setupEventListeners();
 
+            $('select', this.element.trigger('change'));
             this._trigger('ready');
         },
 
@@ -143,7 +144,6 @@
             if ($wrapper.length && initDropdown) {
                 initDropdown.call($('.dropdown', this.element));
             }
-            this._setDefaultSelectedValue(dropdown);
         },
 
         /**
@@ -185,17 +185,6 @@
         },
 
         /**
-         * Set selected by default value in dropdown
-         *
-         * @param {jQuery} dropdown
-         * @private
-         */
-        _setDefaultSelectedValue: function (dropdown) {
-            var currentSrs = this.mbMap.getModel().getCurrentProjectionCode();
-            dropdown.val(currentSrs);
-        },
-
-        /**
          * Setup event listeners
          *
          * @private
@@ -227,7 +216,6 @@
                     resizable:              true,
                     modal:                  false,
                     closeButton:            false,
-                    closeOnPopupCloseClick: true,
                     closeOnESC:             false,
                     destroyOnClose:         false,
                     detachOnClose:          false,

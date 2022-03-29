@@ -14,6 +14,9 @@
 
 NOTE: This version cannot be installed on Mapbender before v3.2.6.
 
+## 1.1.5
+* Fix initially selected SRS not applied to calculations
+
 ## 1.1.4
 * Allow both "," and "." as a decimal separator in manual coordinate entry ([PR#16](https://github.com/mapbender/coordinates-utility/pull/16))
 
