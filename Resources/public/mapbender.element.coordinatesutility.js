@@ -217,7 +217,6 @@
                     resizable:              true,
                     modal:                  false,
                     closeButton:            false,
-                    closeOnPopupCloseClick: true,
                     closeOnESC:             false,
                     destroyOnClose:         false,
                     detachOnClose:          false,
