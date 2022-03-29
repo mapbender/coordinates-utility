@@ -5,7 +5,7 @@ namespace Mapbender\CoordinatesUtilityBundle\Controller;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,10 +14,10 @@ use Mapbender\CoreBundle\Entity\SRS;
 
 class CoordinatesUtilityController
 {
-    /** @var RegistryInterface */
+    /** @var ManagerRegistry|\Symfony\Bridge\Doctrine\RegistryInterface */
     protected $doctrineRegistry;
 
-    public function __construct(RegistryInterface $doctrineRegistry)
+    public function __construct($doctrineRegistry)
     {
         $this->doctrineRegistry = $doctrineRegistry;
     }
