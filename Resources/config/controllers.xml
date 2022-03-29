@@ -3,7 +3,9 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Mapbender\CoordinatesUtilityBundle\Controller\CoordinatesUtilityController" class="Mapbender\CoordinatesUtilityBundle\Controller\CoordinatesUtilityController">
+        <service id="Mapbender\CoordinatesUtilityBundle\Controller\CoordinatesUtilityController"
+                 class="Mapbender\CoordinatesUtilityBundle\Controller\CoordinatesUtilityController"
+                 public="true">
             <argument type="service" id="doctrine" />
         </service>
     </services>
