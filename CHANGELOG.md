@@ -1,3 +1,6 @@
+## 1.2.4
+* Fix initially selected SRS not applied to calculations
+
 # 1.2.3
 * Fix incompatibility with current doctrine/doctrine-bundle
 
