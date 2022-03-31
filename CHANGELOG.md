@@ -1,3 +1,6 @@
+## 1.2.5
+* Fix coordinate transformation errors on Openlayers 6 with SRSes not pre-configured on map
+
 ## 1.2.4
 * Fix initially selected SRS not applied to calculations
 * Fix Symfony 4 compatibility of autocomplete controller definition
