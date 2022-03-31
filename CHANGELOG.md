@@ -21,6 +21,9 @@
 
 NOTE: This version cannot be installed on Mapbender before v3.2.6.
 
+## 1.1.7
+* 'Fix errors processing invalid srs list entries
+
 ## 1.1.6
 * Fix coordinate transformation errors on Openlayers 6 with SRSes not pre-configured on map
 
