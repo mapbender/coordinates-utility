@@ -1,3 +1,6 @@
+## 1.1.6
+* Fix coordinate transformation errors on Openlayers 6 with SRSes not pre-configured on map
+
 ## 1.1.5
 * Fix initially selected SRS not applied to calculations
 
