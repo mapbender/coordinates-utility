@@ -79,7 +79,7 @@
          */
         _initializeMissingSrsDefinitions: function (srsList) {
 
-            if (null === srsList || typeof srsList.length === "undefined") {
+            if (!srsList || !srsList.length) {
                 return;
             }
 
@@ -91,6 +91,9 @@
                     Proj4js.defs[srs.name] = srs.definition;
                 }
             });
+            if (window.proj4 && (((window.ol || {}).proj || {}).proj4 || {}).register) {
+                ol.proj.proj4.register(window.proj4);
+            }
         },
 
         /**
