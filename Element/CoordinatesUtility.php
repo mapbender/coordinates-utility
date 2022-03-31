@@ -146,7 +146,12 @@ class CoordinatesUtility extends Element implements ConfigMigrationInterface
                 'title' => trim($title) ?: null,
             );
         }
-        return $srsList;
+        foreach ($srsList as $k => $srsSpec) {
+            if (empty($srsSpec['name'])) {
+                unset($srsList[$k]);
+            }
+        }
+        return \array_values($srsList);
     }
 
     /**
