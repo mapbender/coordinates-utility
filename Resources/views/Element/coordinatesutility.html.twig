@@ -1,15 +1,13 @@
 
     <div class="form-group">
         <p>{{ "mb.coordinatesutility.view.srs.title" | trans }}</p>
-        <div class="dropdown" title="{{ "mb.coordinatesutility.view.srs.tooltip" | trans }}">
-            <select class="hiddenDropdown srs"></select>
-            <div class="dropdownValue iconDown"></div>
-            <ul class="dropdownList"></ul>
+        <div class="dropdown" title="{{ "mb.coordinatesutility.view.srs.tooltip" | trans }}" style="padding-right:0;">
+            <select class="srs" style="border:none;width:100%;height:100%;"></select>
         </div>
     </div>
     <div class="form-group">
         <div class="input-group">
-            <input class="form-control input-coordinate" type="text" title="{{ "mb.coordinatesutility.view.transformedCoordinates.tooltip" | trans }}" value=""/>
+            <input class="form-control input-coordinate" placeholder="longitude / latitude" type="text" title="{{ "mb.coordinatesutility.view.transformedCoordinates.tooltip" | trans }}" value=""/>
             <div class="input-group-addon -fn-copy-clipboard"><i class="fa far fa-paste" title="{{ "mb.coordinatesutility.view.copytoclipboard.tooltip" | trans }}"></i></div>
         </div>
     </div>
@@ -17,7 +15,7 @@
     <div class="form-group">
         <p>{{ "mb.coordinatesutility.view.originCoordinates.title" | trans }}</p>
         <div class="input-group">
-            <input class="form-control map-coordinate" type="text" title="{{ "mb.coordinatesutility.view.transformedCoordinates.tooltip" | trans }}" value=""/>
+            <input class="form-control map-coordinate" placeholder="longitude / latitude" type="text" title="{{ "mb.coordinatesutility.view.transformedCoordinates.tooltip" | trans }}" value=""/>
             <div class="input-group-addon -fn-copy-clipboard"><i class="fa far fa-paste" title="{{ "mb.coordinatesutility.view.copytoclipboard.tooltip" | trans }}"></i></div>
         </div>
     </div>
