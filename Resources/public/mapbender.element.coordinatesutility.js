@@ -234,6 +234,8 @@
             }
 
             widget.popupWindow.$element.removeClass('hidden');
+
+            $(widget.popupWindow.$element).find("input").val('');
         },
 
         /**
