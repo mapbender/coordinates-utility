@@ -430,7 +430,19 @@
          */
         _showFeature: function () {
             this._removeFeature();
+            this.highlightLayer.markerStyle_ = new ol.style.Style({
+               image: new ol.style.Circle({
+                   radius: 8,
+                   stroke: new ol.style.Stroke({
+                       color: 'rgba(255,200,0,0.7)'
+                   }),
+                   fill: new ol.style.Fill({
+                       color: 'rgba(255, 255, 0, 1)'
+                   }),
+               }),
+            });
             this.highlightLayer.addMarker(this.lon, this.lat);
+
         },
 
         /**
