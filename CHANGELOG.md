@@ -1,3 +1,7 @@
+## 1.2.7
+* Stop propagation on map click to prevent e.g. feature info from triggering as well
+* Clear focus after deactivating coordinate search
+
 ## 1.2.6
 * Fix errors processing invalid srs list entries
 

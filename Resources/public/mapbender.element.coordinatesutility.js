@@ -110,11 +110,12 @@
             if (!widget.isPopUpDialog) {
                 var coordinateSearchButton = $('.coordinate-search', this.element);
 
-                coordinateSearchButton.on('click', function () {
+                coordinateSearchButton.on('click', function (e) {
                     var isActive = $(this).hasClass('active');
 
                     if (isActive) {
                         widget.deactivate();
+                        this.blur();
                     } else {
                         widget.activate();
                     }
@@ -307,6 +308,7 @@
             if (!this.mapClickActive) {
                 return;
             }
+            event.stopPropagation();
             var x = this.lon = data.coordinate[0];
             var y = this.lat = data.coordinate[1];
             var mapSrs = this.mbMap.getModel().getCurrentProjectionCode();
