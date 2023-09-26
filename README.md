@@ -1,4 +1,10 @@
-# Mapbender coordinates utility module
+# Deprecated
+
+This repository is deprecated. Its functionality will be integrated into the [mapbender core repository](https://github.com/mapbender/mapbender/) in version 4.0 and the code has already been ported to the [develop branch](https://github.com/mapbender/mapbender/blob/develop/src/Mapbender/CoreBundle/Element/CoordinatesUtility.php). Propose any changes there.
+
+---
+
+## Old description: Mapbender coordinates utility module
 Retrieve coordinates from the map, Zoom to a given map coordinate
 
 ## Features
