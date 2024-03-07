@@ -199,6 +199,14 @@
             $(document).on('mbmapsrschanged', $.proxy(widget._resetFields, widget));
 
             $('select.srs', this.element).on('change', function() {
+                let txt = $(this).find("option:selected").text();
+                if (txt.includes("Google Maps")) {
+                    widget.lonLatReversed = true;
+                    $('input.input-coordinate', widget.element).attr("placeholder","latitude / longitude");
+                } else {
+                    widget.lonLatReversed = false;
+                    $('input.input-coordinate', widget.element).attr("placeholder","longitude / latitude");
+                }
                 widget._recalculateDisplayCoordinate($(this).val());
             });
             $('input.input-coordinate', widget.element).on('change', $.proxy(widget._transformCoordinateToMapSrs, widget));
@@ -318,7 +326,11 @@
             if (selectedSrs) {
                 if (selectedSrs !== mapSrs) {
                     var transformed = this._transformCoordinate(x, y, selectedSrs, mapSrs);
-                    this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
+                    if (this.lonLatReversed) {
+                        this.transformedCoordinate = this._formatOutputString(transformed.y, transformed.x, selectedSrs);
+                    } else {
+                        this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
+                    }
                 } else {
                     this.transformedCoordinate = this.currentMapCoordinate;
                 }
@@ -414,7 +426,11 @@
                 var mapSrs = this.mbMap.getModel().getCurrentProjectionCode();
                 if (mapSrs !== selectedSrs) {
                     var transformed = this._transformCoordinate(this.lon, this.lat, selectedSrs, mapSrs);
-                    this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
+                    if (this.lonLatReversed) {
+                        this.transformedCoordinate = this._formatOutputString(transformed.y, transformed.x, selectedSrs);
+                    } else {
+                        this.transformedCoordinate = this._formatOutputString(transformed.x, transformed.y, selectedSrs);
+                    }
                 } else {
                     this.transformedCoordinate = this._formatOutputString(this.lon, this.lat, selectedSrs);
                 }
@@ -496,8 +512,13 @@
             inputCoordinates = inputCoordinates.replace(/,/g, '.');
             var inputCoordinatesArray = inputCoordinates.split(/ \s*/);
 
-            var lat = parseFloat(inputCoordinatesArray.pop());
-            var lon = parseFloat(inputCoordinatesArray.pop());
+            if (!this.lonLatReversed) {
+                var lat = parseFloat(inputCoordinatesArray.pop());
+                var lon = parseFloat(inputCoordinatesArray.pop());
+            } else {
+                var lon = parseFloat(inputCoordinatesArray.pop());
+                var lat = parseFloat(inputCoordinatesArray.pop());
+            }
 
             var mapProjection = this.mbMap.getModel().getCurrentProjectionCode();
             var transformed = this._transformCoordinate(lon, lat, mapProjection, selectedSrs);
@@ -515,6 +536,8 @@
                 this.transformedCoordinate = inputCoordinates;
                 this._updateFields();
                 this._showFeature();
+            } else {
+                console.error("Coordinates not valid in srs "+selectedSrs+": Longitude "+lon+" Latitude "+lat);
             }
         }
     });
